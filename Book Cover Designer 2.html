@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookCraft - Professional Cover Designer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tagline {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .control-section {
+            padding: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .color-input {
+            width: 50px;
+            height: 40px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-input:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .range-input {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+        }
+
+        .font-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .font-option {
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 14px;
+        }
+
+        .font-option:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .font-option.active {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .template-option {
+            aspect-ratio: 2/3;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-option:hover {
+            border-color: #4f46e5;
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.2);
+        }
+
+        .template-option.active {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .action-buttons {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #4f46e5;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        .canvas-container {
+            position: relative;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .canvas-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+        }
+
+        #bookCanvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .floating-toolbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .toolbar-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .toolbar-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+        }
+
+        .preset-colors {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .preset-color {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .preset-color:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">BookCraft</div>
+                <div class="tagline">Professional Cover Designer</div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">
+                    <div class="section-icon">📖</div>
+                    Book Details
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" id="bookTitle" class="form-input" placeholder="Enter book title" value="The Great Adventure">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Author</label>
+                    <input type="text" id="authorName" class="form-input" placeholder="Enter author name" value="Jane Smith">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subtitle</label>
+                    <textarea id="subtitle" class="form-textarea" placeholder="Enter subtitle or tagline"></textarea>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">
+                    <div class="section-icon">🎨</div>
+                    Design Templates
+                </div>
+                <div class="template-grid">
+                    <div class="template-option active" data-template="modern" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                    <div class="template-option" data-template="classic" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="template-option" data-template="minimalist" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                    <div class="template-option" data-template="vintage" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></div>
+                    <div class="template-option" data-template="thriller" style="background: linear-gradient(135deg, #fa709a, #fee140);"></div>
+                    <div class="template-option" data-template="romance" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">
+                    <div class="section-icon">🌈</div>
+                    Colors & Background
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Background Style</label>
+                    <select id="backgroundType" class="form-select">
+                        <option value="gradient">Gradient</option>
+                        <option value="solid">Solid Color</option>
+                        <option value="image">Upload Image</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Primary Color</label>
+                    <div class="color-input-group">
+                        <input type="color" id="primaryColor" class="color-input" value="#667eea">
+                        <input type="text" id="primaryColorText" class="form-input" style="flex: 1;" value="#667eea">
+                    </div>
+                    <div class="preset-colors">
+                        <div class="preset-color" style="background: #667eea;" data-color="#667eea"></div>
+                        <div class="preset-color" style="background: #f093fb;" data-color="#f093fb"></div>
+                        <div class="preset-color" style="background: #4facfe;" data-color="#4facfe"></div>
+                        <div class="preset-color" style="background: #43e97b;" data-color="#43e97b"></div>
+                        <div class="preset-color" style="background: #fa709a;" data-color="#fa709a"></div>
+                        <div class="preset-color" style="background: #ffecd2;" data-color="#ffecd2"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Secondary Color</label>
+                    <div class="color-input-group">
+                        <input type="color" id="secondaryColor" class="color-input" value="#764ba2">
+                        <input type="text" id="secondaryColorText" class="form-input" style="flex: 1;" value="#764ba2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="file" id="backgroundImage" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">
+                    <div class="section-icon">✏️</div>
+                    Typography
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title Font</label>
+                    <div class="font-preview">
+                        <div class="font-option active" data-font="serif" style="font-family: Georgia, serif;">Serif</div>
+                        <div class="font-option" data-font="sans" style="font-family: Arial, sans-serif;">Sans</div>
+                        <div class="font-option" data-font="script" style="font-family: cursive;">Script</div>
+                        <div class="font-option" data-font="mono" style="font-family: monospace;">Mono</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title Size: <span id="titleSizeValue">48</span>px</label>
+                    <input type="range" id="titleSize" class="range-input" min="24" max="72" value="48">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Author Size: <span id="authorSizeValue">24</span>px</label>
+                    <input type="range" id="authorSize" class="range-input" min="16" max="36" value="24">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Text Color</label>
+                    <div class="color-input-group">
+                        <input type="color" id="textColor" class="color-input" value="#ffffff">
+                        <input type="text" id="textColorText" class="form-input" style="flex: 1;" value="#ffffff">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">
+                    <div class="section-icon">📐</div>
+                    Layout & Effects
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title Position</label>
+                    <select id="titlePosition" class="form-select">
+                        <option value="top">Top</option>
+                        <option value="middle" selected>Middle</option>
+                        <option value="bottom">Bottom</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Text Shadow: <span id="shadowValue">4</span>px</label>
+                    <input type="range" id="textShadow" class="range-input" min="0" max="10" value="4">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Corner Radius: <span id="radiusValue">0</span>px</label>
+                    <input type="range" id="cornerRadius" class="range-input" min="0" max="20" value="0">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="downloadCover()">📥 Download Cover</button>
+                <button class="btn btn-secondary" onclick="resetToDefaults()">🔄 Reset Design</button>
+                <button class="btn btn-secondary" onclick="randomizeDesign()">🎲 Random Design</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="bookCanvas" width="400" height="600"></canvas>
+            </div>
+            <div class="floating-toolbar">
+                <button class="toolbar-btn" onclick="undoLastChange()" title="Undo">↶</button>
+                <button class="toolbar-btn" onclick="redoLastChange()" title="Redo">↷</button>
+                <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">+</button>
+                <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let canvas, ctx;
+        let currentTemplate = 'modern';
+        let undoStack = [];
+        let redoStack = [];
+        let zoomLevel = 1;
+        
+        // Templates configuration
+        const templates = {
+            modern: {
+                primaryColor: '#667eea',
+                secondaryColor: '#764ba2',
+                textColor: '#ffffff',
+                titleFont: 'sans',
+                titleSize: 48,
+                authorSize: 24
+            },
+            classic: {
+                primaryColor: '#f093fb',
+                secondaryColor: '#f5576c',
+                textColor: '#ffffff',
+                titleFont: 'serif',
+                titleSize: 52,
+                authorSize: 22
+            },
+            minimalist: {
+                primaryColor: '#4facfe',
+                secondaryColor: '#00f2fe',
+                textColor: '#ffffff',
+                titleFont: 'sans',
+                titleSize: 44,
+                authorSize: 20
+            },
+            vintage: {
+                primaryColor: '#43e97b',
+                secondaryColor: '#38f9d7',
+                textColor: '#2d3748',
+                titleFont: 'serif',
+                titleSize: 50,
+                authorSize: 24
+            },
+            thriller: {
+                primaryColor: '#fa709a',
+                secondaryColor: '#fee140',
+                textColor: '#1a202c',
+                titleFont: 'sans',
+                titleSize: 54,
+                authorSize: 26
+            },
+            romance: {
+                primaryColor: '#a8edea',
+                secondaryColor: '#fed6e3',
+                textColor: '#2d3748',
+                titleFont: 'script',
+                titleSize: 46,
+                authorSize: 22
+            }
+        };
+
+        // Initialize the application
+        function init() {
+            canvas = document.getElementById('bookCanvas');
+            ctx = canvas.getContext('2d');
+            
+            setupEventListeners();
+            renderCover();
+            saveState();
+        }
+
+        function setupEventListeners() {
+            // Text inputs
+            document.getElementById('bookTitle').addEventListener('input', renderCover);
+            document.getElementById('authorName').addEventListener('input', renderCover);
+            document.getElementById('subtitle').addEventListener('input', renderCover);
+            
+            // Color inputs
+            document.getElementById('primaryColor').addEventListener('input', function() {
+                document.getElementById('primaryColorText').value = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('secondaryColor').addEventListener('input', function() {
+                document.getElementById('secondaryColorText').value = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('textColor').addEventListener('input', function() {
+                document.getElementById('textColorText').value = this.value;
+                renderCover();
+            });
+            
+            // Text color inputs
+            document.getElementById('primaryColorText').addEventListener('input', function() {
+                document.getElementById('primaryColor').value = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('secondaryColorText').addEventListener('input', function() {
+                document.getElementById('secondaryColor').value = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('textColorText').addEventListener('input', function() {
+                document.getElementById('textColor').value = this.value;
+                renderCover();
+            });
+            
+            // Range inputs
+            document.getElementById('titleSize').addEventListener('input', function() {
+                document.getElementById('titleSizeValue').textContent = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('authorSize').addEventListener('input', function() {
+                document.getElementById('authorSizeValue').textContent = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('textShadow').addEventListener('input', function() {
+                document.getElementById('shadowValue').textContent = this.value;
+                renderCover();
+            });
+            
+            document.getElementById('cornerRadius').addEventListener('input', function() {
+                document.getElementById('radiusValue').textContent = this.value;
+                renderCover();
+            });
+            
+            // Select inputs
+            document.getElementById('backgroundType').addEventListener('change', renderCover);
+            document.getElementById('titlePosition').addEventListener('change', renderCover);
+            
+            // Template selection
+            document.querySelectorAll('.template-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTemplate = this.dataset.template;
+                    applyTemplate(currentTemplate);
+                });
+            });
+            
+            // Font selection
+            document.querySelectorAll('.font-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    renderCover();
+                });
+            });
+            
+            // Preset colors
+            document.querySelectorAll('.preset-color').forEach(color => {
+                color.addEventListener('click', function() {
+                    const colorValue = this.dataset.color;
+                    document.getElementById('primaryColor').value = colorValue;
+                    document.getElementById('primaryColorText').value = colorValue;
+                    renderCover();
+                });
+            });
+            
+            // Background image upload
+            document.getElementById('backgroundImage').addEventListener('change', handleImageUpload);
+        }
+
+        function applyTemplate(templateName) {
+            const template = templates[templateName];
+            if (!template) return;
+            
+            // Apply template values
+            document.getElementById('primaryColor').value = template.primaryColor;
+            document.getElementById('primaryColorText').value = template.primaryColor;
+            document.getElementById('secondaryColor').value = template.secondaryColor;
+            document.getElementById('secondaryColorText').value = template.secondaryColor;
+            document.getElementById('textColor').value = template.textColor;
+            document.getElementById('textColorText').value = template.textColor;
+            document.getElementById('titleSize').value = template.titleSize;
+            document.getElementById('titleSizeValue').textContent = template.titleSize;
+            document.getElementById('authorSize').value = template.authorSize;
+            document.getElementById('authorSizeValue').textContent = template.authorSize;
+            
+            // Apply font
+            document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`[data-font="${template.titleFont}"]`).classList.add('active');
+            
+            renderCover();
+            saveState();
+        }
+
+        function renderCover() {
+            const title = document.getElementById('bookTitle').value || 'Book Title';
+            const author = document.getElementById('authorName').value || 'Author Name';
+            const subtitle = document.getElementById('subtitle').value;
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            const textColor = document.getElementById('textColor').value;
+            const titleSize = parseInt(document.getElementById('titleSize').value);
+            const authorSize = parseInt(document.getElementById('authorSize').value);
+            const titlePosition = document.getElementById('titlePosition').value;
+            const textShadow = parseInt(document.getElementById('textShadow').value);
+            const cornerRadius = parseInt(document.getElementById('cornerRadius').value);
+            const backgroundType = document.getElementById('backgroundType').value;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Apply corner radius
+            if (cornerRadius > 0) {
+                ctx.save();
+                roundRect(ctx, 0, 0, canvas.width, canvas.height, cornerRadius);
+                ctx.clip();
+            }
+            
+            // Draw background
+            if (backgroundType === 'gradient') {
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, primaryColor);
+                gradient.addColorStop(1, secondaryColor);
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = primaryColor;
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Get selected font
+            const selectedFont = document.querySelector('.font-option.active').dataset.font;
+            const fontFamily = getFontFamily(selectedFont);
+            
+            // Set text properties
+            ctx.fillStyle = textColor;
+            ctx.textAlign = 'center';
+            
+            // Text shadow
+            if (textShadow > 0) {
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = textShadow;
+                ctx.shadowOffsetX = textShadow / 2;
+                ctx.shadowOffsetY = textShadow / 2;
+            }
+            
+            // Calculate positions based on titlePosition
+            let titleY, authorY, subtitleY;
+            
+            switch (titlePosition) {
+                case 'top':
+                    titleY = canvas.height * 0.25;
+                    authorY = canvas.height * 0.85;
+                    subtitleY = canvas.height * 0.4;
+                    break;
+                case 'bottom':
+                    titleY = canvas.height * 0.75;
+                    authorY = canvas.height * 0.15;
+                    subtitleY = canvas.height * 0.6;
+                    break;
+                default: // middle
+                    titleY = canvas.height * 0.45;
+                    authorY = canvas.height * 0.85;
+                    subtitleY = canvas.height * 0.6;
+            }
+            
+            // Draw title
+            ctx.font = `bold ${titleSize}px ${fontFamily}`;
+            wrapText(ctx, title, canvas.width / 2, titleY, canvas.width - 40, titleSize * 1.2);
+            
+            // Draw subtitle if provided
+            if (subtitle) {
+                ctx.font = `${Math.round(titleSize * 0.4)}px ${fontFamily}`;
+                ctx.globalAlpha = 0.8;
+                wrapText(ctx, subtitle, canvas.width / 2, subtitleY, canvas.width - 60, titleSize * 0.6);
+                ctx.globalAlpha = 1;
+            }
+            
+            // Draw author
+            ctx.font = `${authorSize}px ${fontFamily}`;
+            ctx.fillText(author, canvas.width / 2, authorY);
+            
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            
+            if (cornerRadius > 0) {
+                ctx.restore();
+            }
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+                
+                if (testWidth > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+            
+            const totalHeight = lines.length * lineHeight;
+            const startY = y - (totalHeight / 2);
+            
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], x, startY + (i * lineHeight));
+            }
+        }
+
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function getFontFamily(fontType) {
+            switch (fontType) {
+                case 'serif':
+                    return 'Georgia, "Times New Roman", serif';
+                case 'sans':
+                    return '"Helvetica Neue", Arial, sans-serif';
+                case 'script':
+                    return '"Dancing Script", cursive';
+                case 'mono':
+                    return '"Courier New", monospace';
+                default:
+                    return 'Arial, sans-serif';
+            }
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Add overlay for better text readability
+                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.3)');
+                    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    renderCover();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function downloadCover() {
+            showLoading();
+            
+            // Create high-resolution canvas for download
+            const downloadCanvas = document.createElement('canvas');
+            const downloadCtx = downloadCanvas.getContext('2d');
+            const scale = 3; // 3x resolution for better quality
+            
+            downloadCanvas.width = canvas.width * scale;
+            downloadCanvas.height = canvas.height * scale;
+            downloadCtx.scale(scale, scale);
+            
+            // Copy current canvas content to high-res canvas
+            downloadCtx.drawImage(canvas, 0, 0);
+            
+            // Trigger download
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.download = `book-cover-${Date.now()}.png`;
+                link.href = downloadCanvas.toDataURL('image/png');
+                link.click();
+                hideLoading();
+            }, 500);
+        }
+
+        function resetToDefaults() {
+            document.getElementById('bookTitle').value = 'The Great Adventure';
+            document.getElementById('authorName').value = 'Jane Smith';
+            document.getElementById('subtitle').value = '';
+            document.getElementById('primaryColor').value = '#667eea';
+            document.getElementById('primaryColorText').value = '#667eea';
+            document.getElementById('secondaryColor').value = '#764ba2';
+            document.getElementById('secondaryColorText').value = '#764ba2';
+            document.getElementById('textColor').value = '#ffffff';
+            document.getElementById('textColorText').value = '#ffffff';
+            document.getElementById('titleSize').value = 48;
+            document.getElementById('titleSizeValue').textContent = '48';
+            document.getElementById('authorSize').value = 24;
+            document.getElementById('authorSizeValue').textContent = '24';
+            document.getElementById('textShadow').value = 4;
+            document.getElementById('shadowValue').textContent = '4';
+            document.getElementById('cornerRadius').value = 0;
+            document.getElementById('radiusValue').textContent = '0';
+            document.getElementById('titlePosition').value = 'middle';
+            document.getElementById('backgroundType').value = 'gradient';
+            
+            // Reset template selection
+            document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector('[data-template="modern"]').classList.add('active');
+            
+            // Reset font selection
+            document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector('[data-font="serif"]').classList.add('active');
+            
+            currentTemplate = 'modern';
+            renderCover();
+            saveState();
+        }
+
+        function randomizeDesign() {
+            const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#ffecd2', '#667eea', '#764ba2'];
+            const fonts = ['serif', 'sans', 'script', 'mono'];
+            const positions = ['top', 'middle', 'bottom'];
+            
+            // Randomize colors
+            const randomPrimary = colors[Math.floor(Math.random() * colors.length)];
+            const randomSecondary = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.getElementById('primaryColor').value = randomPrimary;
+            document.getElementById('primaryColorText').value = randomPrimary;
+            document.getElementById('secondaryColor').value = randomSecondary;
+            document.getElementById('secondaryColorText').value = randomSecondary;
+            
+            // Randomize font
+            const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
+            document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`[data-font="${randomFont}"]`).classList.add('active');
+            
+            // Randomize sizes
+            document.getElementById('titleSize').value = Math.floor(Math.random() * 24) + 36; // 36-60
+            document.getElementById('titleSizeValue').textContent = document.getElementById('titleSize').value;
+            document.getElementById('authorSize').value = Math.floor(Math.random() * 12) + 18; // 18-30
+            document.getElementById('authorSizeValue').textContent = document.getElementById('authorSize').value;
+            
+            // Randomize position
+            const randomPosition = positions[Math.floor(Math.random() * positions.length)];
+            document.getElementById('titlePosition').value = randomPosition;
+            
+            // Randomize effects
+            document.getElementById('textShadow').value = Math.floor(Math.random() * 8);
+            document.getElementById('shadowValue').textContent = document.getElementById('textShadow').value;
+            document.getElementById('cornerRadius').value = Math.floor(Math.random() * 15);
+            document.getElementById('radiusValue').textContent = document.getElementById('cornerRadius').value;
+            
+            renderCover();
+            saveState();
+        }
+
+        function saveState() {
+            const state = {
+                title: document.getElementById('bookTitle').value,
+                author: document.getElementById('authorName').value,
+                subtitle: document.getElementById('subtitle').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                textColor: document.getElementById('textColor').value,
+                titleSize: document.getElementById('titleSize').value,
+                authorSize: document.getElementById('authorSize').value,
+                titlePosition: document.getElementById('titlePosition').value,
+                textShadow: document.getElementById('textShadow').value,
+                cornerRadius: document.getElementById('cornerRadius').value,
+                backgroundType: document.getElementById('backgroundType').value,
+                selectedFont: document.querySelector('.font-option.active').dataset.font,
+                template: currentTemplate
+            };
+            
+            undoStack.push(JSON.stringify(state));
+            if (undoStack.length > 20) {
+                undoStack.shift();
+            }
+            redoStack = [];
+        }
+
+        function undoLastChange() {
+            if (undoStack.length <= 1) return;
+            
+            const currentState = undoStack.pop();
+            redoStack.push(currentState);
+            
+            const previousState = JSON.parse(undoStack[undoStack.length - 1]);
+            restoreState(previousState);
+        }
+
+        function redoLastChange() {
+            if (redoStack.length === 0) return;
+            
+            const state = JSON.parse(redoStack.pop());
+            undoStack.push(JSON.stringify(state));
+            restoreState(state);
+        }
+
+        function restoreState(state) {
+            document.getElementById('bookTitle').value = state.title;
+            document.getElementById('authorName').value = state.author;
+            document.getElementById('subtitle').value = state.subtitle;
+            document.getElementById('primaryColor').value = state.primaryColor;
+            document.getElementById('primaryColorText').value = state.primaryColor;
+            document.getElementById('secondaryColor').value = state.secondaryColor;
+            document.getElementById('secondaryColorText').value = state.secondaryColor;
+            document.getElementById('textColor').value = state.textColor;
+            document.getElementById('textColorText').value = state.textColor;
+            document.getElementById('titleSize').value = state.titleSize;
+            document.getElementById('titleSizeValue').textContent = state.titleSize;
+            document.getElementById('authorSize').value = state.authorSize;
+            document.getElementById('authorSizeValue').textContent = state.authorSize;
+            document.getElementById('titlePosition').value = state.titlePosition;
+            document.getElementById('textShadow').value = state.textShadow;
+            document.getElementById('shadowValue').textContent = state.textShadow;
+            document.getElementById('cornerRadius').value = state.cornerRadius;
+            document.getElementById('radiusValue').textContent = state.cornerRadius;
+            document.getElementById('backgroundType').value = state.backgroundType;
+            
+            // Restore font selection
+            document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`[data-font="${state.selectedFont}"]`).classList.add('active');
+            
+            // Restore template selection
+            document.querySelectorAll('.template-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`[data-template="${state.template}"]`).classList.add('active');
+            
+            currentTemplate = state.template;
+            renderCover();
+        }
+
+        function zoomIn() {
+            if (zoomLevel < 2) {
+                zoomLevel += 0.2;
+                canvas.style.transform = `scale(${zoomLevel})`;
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 0.5) {
+                zoomLevel -= 0.2;
+                canvas.style.transform = `scale(${zoomLevel})`;
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        // Background image upload trigger
+        document.getElementById('backgroundType').addEventListener('change', function() {
+            if (this.value === 'image') {
+                document.getElementById('backgroundImage').click();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'z':
+                        e.preventDefault();
+                        if (e.shiftKey) {
+                            redoLastChange();
+                        } else {
+                            undoLastChange();
+                        }
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        downloadCover();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        randomizeDesign();
+                        break;
+                }
+            }
+        });
+
+        // Auto-save state on changes
+        setInterval(() => {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.dataset.lastValue !== input.value) {
+                    input.dataset.lastValue = input.value;
+                    saveState();
+                }
+            });
+        }, 2000);
+
+        // Enhanced text effects
+        function addTextEffects() {
+            // Gradient text effect (for modern browsers)
+            const titleGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            titleGradient.addColorStop(0, document.getElementById('textColor').value);
+            titleGradient.addColorStop(1, lightenColor(document.getElementById('textColor').value, 20));
+            ctx.fillStyle = titleGradient;
+        }
+
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+        }
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
