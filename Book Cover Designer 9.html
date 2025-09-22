@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookCraft - Professional Cover Designer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at top, #1a1a2e 0%, #16213e 35%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ff6b9d, #c471ed, #12c2e9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            letter-spacing: -0.02em;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+            color: #a0a9c0;
+            font-weight: 400;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 
+                0 32px 64px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            height: fit-content;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .sidebar h3 {
+            color: #fff;
+            margin-bottom: 24px;
+            font-size: 1.4em;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+            position: relative;
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar h3::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(135deg, #ff6b9d, #c471ed);
+            border-radius: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(255, 107, 157, 0.6);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 0 0 4px rgba(255, 107, 157, 0.1),
+                0 8px 32px rgba(255, 107, 157, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .color-input {
+            height: 60px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            background: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-input::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 14px;
+            background: conic-gradient(from 0deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080, #ff0000);
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .range-input {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d, #c471ed);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .range-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+        }
+
+        .font-preview {
+            padding: 16px 20px;
+            margin-top: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .preset-btn {
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            text-align: center;
+            color: #e2e8f0;
+            font-size: 0.9em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preset-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: rgba(255, 107, 157, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
+        }
+
+        .preset-btn:hover::before {
+            left: 100%;
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.2), rgba(196, 113, 237, 0.2));
+            color: #fff;
+            border-color: rgba(255, 107, 157, 0.6);
+            box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+        }
+
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px);
+            transform: perspective(1000px) rotateX(5deg);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .canvas-wrapper:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-8px);
+            box-shadow: 
+                0 35px 70px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+
+        #bookCanvas {
+            display: block;
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(12px);
+            border: 2px solid transparent;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b9d, #c471ed, #12c2e9);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(255, 107, 157, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00f5a0, #00d9f5);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(0, 245, 160, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 245, 160, 0.6);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(45deg, rgba(255, 107, 157, 0.3), rgba(196, 113, 237, 0.3));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(255, 107, 157, 0.6);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-area:hover::before {
+            opacity: 1;
+        }
+
+        .upload-area.dragover {
+            border-color: rgba(255, 107, 157, 0.8);
+            background: rgba(255, 107, 157, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-area p {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .texture-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .texture-option {
+            aspect-ratio: 1;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .texture-option::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .texture-option:hover {
+            border-color: rgba(255, 107, 157, 0.6);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+        }
+
+        .texture-option:hover::before {
+            opacity: 1;
+        }
+
+        .texture-option.active {
+            border-color: rgba(255, 107, 157, 0.8);
+            border-width: 3px;
+            box-shadow: 0 8px 32px rgba(255, 107, 157, 0.4);
+            transform: scale(1.02);
+        }
+
+        .stats {
+            background: rgba(0, 245, 160, 0.1);
+            border: 1px solid rgba(0, 245, 160, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(8px);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #ff6b9d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        .loading p {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 360px 1fr;
+                gap: 30px;
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 24px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .canvas-wrapper {
+                transform: none;
+            }
+
+            .canvas-wrapper:hover {
+                transform: translateY(-4px);
+            }
+        }
+
+        .gradient-preview {
+            height: 40px;
+            border-radius: 12px;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .layer-controls {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #e2e8f0;
+        }
+
+        .layer-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
+        }
+
+        .layer-item.active {
+            background: rgba(255, 107, 157, 0.15);
+            border: 1px solid rgba(255, 107, 157, 0.4);
+            color: #fff;
+        }
+
+        /* Custom scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff6b9d, #c471ed);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #ff5a8a, #b461da);
+        }
+
+        /* Floating particles animation */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 107, 157, 0.4), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(196, 113, 237, 0.3), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: float 20s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-10px) translateX(10px); }
+            66% { transform: translateY(5px) translateX(-5px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+            /*display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        } what*/
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4c51bf, #667eea);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 81, 191, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .upload-area:hover {
+            border-color: #4c51bf;
+            background: #f9fafb;
+        }
+
+        .upload-area.dragover {
+            border-color: #4c51bf;
+            background: #f0f0ff;
+        }
+
+        .texture-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .texture-option {
+            aspect-ratio: 1;
+            border: 2px solid #e1e5f2;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .texture-option:hover {
+            border-color: #4c51bf;
+            transform: scale(1.05);
+        }
+
+        .texture-option.active {
+            border-color: #4c51bf;
+            border-width: 3px;
+        }
+
+        .stats {
+            background: #f0f9ff;
+            border: 1px solid #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4c51bf;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .gradient-preview {
+            height: 30px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 1px solid #e1e5f2;
+        }
+
+        .layer-controls {
+            background: #fff;
+            border: 1px solid #e1e5f2;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .layer-item:hover {
+            background: #f8f9fa;
+        }
+
+        .layer-item.active {
+            background: #e6f3ff;
+            border: 1px solid #4c51bf;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 BookCraft Designer</h1>
+            <p>Create professional book covers with advanced design tools</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="stats">
+                    <div class="stats-row">
+                        <span>Canvas Size:</span>
+                        <span id="canvasSize">400 × 600px</span>
+                    </div>
+                    <div class="stats-row">
+                        <span>Aspect Ratio:</span>
+                        <span>2:3 (Standard)</span>
+                    </div>
+                </div>
+
+                <h3>📖 Book Details</h3>
+                <div class="form-group">
+                    <label for="bookTitle">Book Title</label>
+                    <input type="text" id="bookTitle" placeholder="Enter book title..." value="The Great Adventure">
+                </div>
+
+                <div class="form-group">
+                    <label for="bookSubtitle">Subtitle (Optional)</label>
+                    <input type="text" id="bookSubtitle" placeholder="Enter subtitle...">
+                </div>
+
+                <div class="form-group">
+                    <label for="authorName">Author Name</label>
+                    <input type="text" id="authorName" placeholder="Enter author name..." value="Jane Smith">
+                </div>
+
+                <div class="form-group">
+                    <label for="genre">Genre/Category</label>
+                    <input type="text" id="genre" placeholder="e.g., Mystery, Romance, Sci-Fi...">
+                </div>
+
+                <h3>🎨 Background Design</h3>
+                <div class="preset-buttons">
+                    <button class="preset-btn active" data-preset="solid">Solid Color</button>
+                    <button class="preset-btn" data-preset="gradient">Gradient</button>
+                    <button class="preset-btn" data-preset="image">Image</button>
+                    <button class="preset-btn" data-preset="texture">Texture</button>
+                </div>
+
+                <div id="solidControls">
+                    <div class="form-group">
+                        <label for="bgColor">Background Color</label>
+                        <input type="color" id="bgColor" class="color-input" value="#2d3748">
+                    </div>
+                </div>
+
+                <div id="gradientControls" style="display: none;">
+                    <div class="form-group">
+                        <label for="gradientColor1">Gradient Start</label>
+                        <input type="color" id="gradientColor1" class="color-input" value="#667eea">
+                    </div>
+                    <div class="form-group">
+                        <label for="gradientColor2">Gradient End</label>
+                        <input type="color" id="gradientColor2" class="color-input" value="#764ba2">
+                    </div>
+                    <div class="form-group">
+                        <label for="gradientAngle">Gradient Angle</label>
+                        <input type="range" id="gradientAngle" class="range-input" min="0" max="360" value="45">
+                        <span id="angleValue">45°</span>
+                    </div>
+                    <div class="gradient-preview" id="gradientPreview"></div>
+                </div>
+
+                <div id="imageControls" style="display: none;">
+                    <div class="upload-area" id="imageUpload">
+                        <p>📷 Click or drag image here</p>
+                        <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="imageOpacity">Image Opacity</label>
+                        <input type="range" id="imageOpacity" class="range-input" min="0" max="100" value="100">
+                        <span id="opacityValue">100%</span>
+                    </div>
+                </div>
+
+                <div id="textureControls" style="display: none;">
+                    <div class="texture-grid">
+                        <div class="texture-option" data-texture="paper" style="background: repeating-linear-gradient(45deg, #f9f9f9, #f9f9f9 2px, #f0f0f0 2px, #f0f0f0 4px);"></div>
+                        <div class="texture-option" data-texture="fabric" style="background: radial-gradient(circle, #e8e8e8 1px, #f5f5f5 1px); background-size: 10px 10px;"></div>
+                        <div class="texture-option" data-texture="wood" style="background: linear-gradient(90deg, #8b4513 0%, #a0522d 50%, #8b4513 100%);"></div>
+                    </div>
+                </div>
+
+                <h3>✍️ Typography</h3>
+                <div class="form-group">
+                    <label for="titleFont">Title Font</label>
+                    <select id="titleFont">
+                        <option value="Georgia">Georgia (Serif)</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Helvetica">Helvetica (Sans)</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Impact">Impact (Bold)</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                        <option value="Courier New">Courier New (Mono)</option>
+                    </select>
+                    <div class="font-preview" id="titleFontPreview">The Great Adventure</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="titleSize">Title Size</label>
+                    <input type="range" id="titleSize" class="range-input" min="20" max="80" value="48">
+                    <span id="titleSizeValue">48px</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="titleColor">Title Color</label>
+                    <input type="color" id="titleColor" class="color-input" value="#ffffff">
+                </div>
+
+                <div class="form-group">
+                    <label for="authorFont">Author Font</label>
+                    <select id="authorFont">
+                        <option value="Georgia">Georgia (Serif)</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Helvetica" selected>Helvetica (Sans)</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Trebuchet MS">Trebuchet MS</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="authorSize" class="tooltip" data-tooltip="Recommended: 60-80% of title size">Author Size</label>
+                    <input type="range" id="authorSize" class="range-input" min="12" max="40" value="24">
+                    <span id="authorSizeValue">24px</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="authorColor">Author Color</label>
+                    <input type="color" id="authorColor" class="color-input" value="#cccccc">
+                </div>
+
+                <h3>📐 Layout & Effects</h3>
+                <div class="form-group">
+                    <label for="titlePosition">Title Position</label>
+                    <select id="titlePosition">
+                        <option value="top">Top</option>
+                        <option value="center" selected>Center</option>
+                        <option value="bottom">Bottom</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="textShadow">Text Shadow Intensity</label>
+                    <input type="range" id="textShadow" class="range-input" min="0" max="10" value="3">
+                    <span id="shadowValue">3px</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="borderWidth">Border Width</label>
+                    <input type="range" id="borderWidth" class="range-input" min="0" max="20" value="0">
+                    <span id="borderValue">0px</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="borderColor">Border Color</label>
+                    <input type="color" id="borderColor" class="color-input" value="#ffffff">
+                </div>
+
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Generating cover...</p>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="bookCanvas" width="400" height="600"></canvas>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="resetBtn">
+                        🔄 Reset Design
+                    </button>
+                    <button class="btn btn-primary" id="previewBtn">
+                        👁️ Full Preview
+                    </button>
+                    <button class="btn btn-success" id="downloadBtn">
+                        💾 Download Cover
+                    </button>
+                    <button class="btn btn-primary" id="saveTemplateBtn">
+                        💼 Save Template
+                    </button>
+                    <button class="btn btn-secondary" id="loadTemplateBtn">
+                        📂 Load Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class BookCoverDesigner {
+            constructor() {
+                this.canvas = document.getElementById('bookCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.backgroundImage = null;
+                this.currentTexture = null;
+                this.templates = JSON.parse(localStorage.getItem('bookCoverTemplates') || '[]');
+                
+                this.initializeEventListeners();
+                this.drawCover();
+            }
+
+            initializeEventListeners() {
+                // Text inputs with enhanced effects
+                ['bookTitle', 'bookSubtitle', 'authorName', 'genre'].forEach(id => {
+                    const input = document.getElementById(id);
+                    input.addEventListener('input', () => this.drawCover());
+                    
+                    // Add typing effect
+                    input.addEventListener('focus', (e) => {
+                        e.target.style.transform = 'translateY(-2px)';
+                    });
+                    
+                    input.addEventListener('blur', (e) => {
+                        e.target.style.transform = 'translateY(0)';
+                    });
+                });
+
+                // Color inputs with enhanced feedback
+                ['bgColor', 'titleColor', 'authorColor', 'borderColor', 'gradientColor1', 'gradientColor2'].forEach(id => {
+                    const input = document.getElementById(id);
+                    input.addEventListener('change', () => this.drawCover());
+                    
+                    // Add color preview effect
+                    input.addEventListener('input', (e) => {
+                        e.target.style.boxShadow = `0 0 0 4px ${e.target.value}20, 0 8px 32px ${e.target.value}40`;
+                    });
+                });
+
+                // Range inputs
+                this.setupRangeInputs();
+
+                // Font selects
+                ['titleFont', 'authorFont', 'titlePosition'].forEach(id => {
+                    document.getElementById(id).addEventListener('change', () => {
+                        this.updateFontPreview();
+                        this.drawCover();
+                    });
+                });
+
+                // Preset buttons with ripple effect
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.addRippleEffect(e);
+                        this.handlePresetChange(e);
+                    });
+                });
+
+                // Image upload
+                this.setupImageUpload();
+
+                // Texture selection with enhanced feedback
+                document.querySelectorAll('.texture-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        this.selectTexture(e);
+                        // Add selection animation
+                        option.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            option.style.transform = 'scale(1.02)';
+                        }, 150);
+                    });
+                });
+
+                // Action buttons with ripple effects
+                const buttons = [
+                    { id: 'downloadBtn', handler: () => this.downloadCover() },
+                    { id: 'resetBtn', handler: () => this.resetDesign() },
+                    { id: 'previewBtn', handler: () => this.showPreview() },
+                    { id: 'saveTemplateBtn', handler: () => this.saveTemplate() },
+                    { id: 'loadTemplateBtn', handler: () => this.loadTemplate() }
+                ];
+
+                buttons.forEach(({ id, handler }) => {
+                    const btn = document.getElementById(id);
+                    btn.addEventListener('click', (e) => {
+                        this.addRippleEffect(e);
+                        this.addLoadingState(btn);
+                        setTimeout(() => {
+                            handler();
+                            this.removeLoadingState(btn);
+                        }, 300);
+                    });
+                });
+            }
+
+            addRippleEffect(event) {
+                const button = event.currentTarget;
+                const ripple = document.createElement('div');
+                
+                button.classList.add('ripple');
+                
+                setTimeout(() => {
+                    button.classList.remove('ripple');
+                }, 600);
+            }
+
+            addLoadingState(button) {
+                button.classList.add('loading');
+                button.style.pointerEvents = 'none';
+            }
+
+            removeLoadingState(button) {
+                button.classList.remove('loading');
+                button.style.pointerEvents = 'auto';
+            }
+
+            setupRangeInputs() {
+                const ranges = [
+                    { id: 'titleSize', display: 'titleSizeValue', suffix: 'px' },
+                    { id: 'authorSize', display: 'authorSizeValue', suffix: 'px' },
+                    { id: 'textShadow', display: 'shadowValue', suffix: 'px' },
+                    { id: 'borderWidth', display: 'borderValue', suffix: 'px' },
+                    { id: 'gradientAngle', display: 'angleValue', suffix: '°' },
+                    { id: 'imageOpacity', display: 'opacityValue', suffix: '%' }
+                ];
+
+                ranges.forEach(range => {
+                    const input = document.getElementById(range.id);
+                    const display = document.getElementById(range.display);
+                    
+                    if (input && display) {
+                        input.addEventListener('input', () => {
+                            display.textContent = input.value + range.suffix;
+                            if (range.id === 'gradientAngle') {
+                                this.updateGradientPreview();
+                            }
+                            this.drawCover();
+                        });
+                    }
+                });
+            }
+
+            setupImageUpload() {
+                const uploadArea = document.getElementById('imageUpload');
+                const fileInput = document.getElementById('imageFile');
+
+                uploadArea.addEventListener('click', () => fileInput.click());
+                
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleImageFile(files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleImageFile(e.target.files[0]);
+                    }
+                });
+            }
+
+            handleImageFile(file) {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.backgroundImage = img;
+                        this.drawCover();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            handlePresetChange(e) {
+                document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const preset = e.target.dataset.preset;
+                ['solidControls', 'gradientControls', 'imageControls', 'textureControls'].forEach(id => {
+                    document.getElementById(id).style.display = 'none';
+                });
+
+                document.getElementById(preset + 'Controls').style.display = 'block';
+                
+                if (preset === 'gradient') {
+                    this.updateGradientPreview();
+                }
+                
+                this.drawCover();
+            }
+
+            selectTexture(e) {
+                document.querySelectorAll('.texture-option').forEach(opt => opt.classList.remove('active'));
+                e.target.classList.add('active');
+                this.currentTexture = e.target.dataset.texture;
+                this.drawCover();
+            }
+
+            updateGradientPreview() {
+                const color1 = document.getElementById('gradientColor1').value;
+                const color2 = document.getElementById('gradientColor2').value;
+                const angle = document.getElementById('gradientAngle').value;
+                
+                const preview = document.getElementById('gradientPreview');
+                preview.style.background = `linear-gradient(${angle}deg, ${color1}, ${color2})`;
+            }
+
+            updateFontPreview() {
+                const titleFont = document.getElementById('titleFont').value;
+                const preview = document.getElementById('titleFontPreview');
+                preview.style.fontFamily = titleFont;
+            }
+
+            drawCover() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw background
+                this.drawBackground();
+                
+                // Draw border if enabled
+                this.drawBorder();
+                
+                // Draw text
+                this.drawText();
+            }
+
+            drawBackground() {
+                const activePreset = document.querySelector('.preset-btn.active').dataset.preset;
+                
+                switch (activePreset) {
+                    case 'solid':
+                        this.ctx.fillStyle = document.getElementById('bgColor').value;
+                        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                        break;
+                        
+                    case 'gradient':
+                        this.drawGradientBackground();
+                        break;
+                        
+                    case 'image':
+                        this.drawImageBackground();
+                        break;
+                        
+                    case 'texture':
+                        this.drawTextureBackground();
+                        break;
+                }
+            }
+
+            drawGradientBackground() {
+                const color1 = document.getElementById('gradientColor1').value;
+                const color2 = document.getElementById('gradientColor2').value;
+                const angle = parseInt(document.getElementById('gradientAngle').value);
+                
+                const angleRad = (angle * Math.PI) / 180;
+                const x1 = this.canvas.width / 2 - (Math.cos(angleRad) * this.canvas.width) / 2;
+                const y1 = this.canvas.height / 2 - (Math.sin(angleRad) * this.canvas.height) / 2;
+                const x2 = this.canvas.width / 2 + (Math.cos(angleRad) * this.canvas.width) / 2;
+                const y2 = this.canvas.height / 2 + (Math.sin(angleRad) * this.canvas.height) / 2;
+                
+                const gradient = this.ctx.createLinearGradient(x1, y1, x2, y2);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+                
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            drawImageBackground() {
+                if (this.backgroundImage) {
+                    const opacity = parseInt(document.getElementById('imageOpacity').value) / 100;
+                    this.ctx.globalAlpha = opacity;
+                    
+                    // Scale image to cover canvas
+                    const scale = Math.max(
+                        this.canvas.width / this.backgroundImage.width,
+                        this.canvas.height / this.backgroundImage.height
+                    );
+                    
+                    const x = (this.canvas.width - this.backgroundImage.width * scale) / 2;
+                    const y = (this.canvas.height - this.backgroundImage.height * scale) / 2;
+                    
+                    this.ctx.drawImage(
+                        this.backgroundImage,
+                        x, y,
+                        this.backgroundImage.width * scale,
+                        this.backgroundImage.height * scale
+                    );
+                    
+                    this.ctx.globalAlpha = 1;
+                } else {
+                    this.ctx.fillStyle = '#cccccc';
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+
+            drawTextureBackground() {
+                // Create texture pattern
+                const patternCanvas = document.createElement('canvas');
+                const patternCtx = patternCanvas.getContext('2d');
+                patternCanvas.width = 20;
+                patternCanvas.height = 20;
+                
+                switch (this.currentTexture) {
+                    case 'paper':
+                        patternCtx.fillStyle = '#f9f9f9';
+                        patternCtx.fillRect(0, 0, 20, 20);
+                        patternCtx.fillStyle = '#f0f0f0';
+                        for (let i = 0; i < 20; i += 4) {
+                            patternCtx.fillRect(i, 0, 2, 20);
+                        }
+                        break;
+                    case 'fabric':
+                        patternCtx.fillStyle = '#f5f5f5';
+                        patternCtx.fillRect(0, 0, 20, 20);
+                        patternCtx.fillStyle = '#e8e8e8';
+                        for (let i = 0; i < 20; i += 10) {
+                            for (let j = 0; j < 20; j += 10) {
+                                patternCtx.beginPath();
+                                patternCtx.arc(i + 5, j + 5, 1, 0, Math.PI * 2);
+                                patternCtx.fill();
+                            }
+                        }
+                        break;
+                    case 'wood':
+                        patternCtx.fillStyle = '#8b4513';
+                        patternCtx.fillRect(0, 0, 20, 20);
+                        patternCtx.fillStyle = '#a0522d';
+                        for (let i = 0; i < 20; i += 2) {
+                            patternCtx.fillRect(0, i, 20, 1);
+                        }
+                        break;
+                    default:
+                        patternCtx.fillStyle = '#f0f0f0';
+                        patternCtx.fillRect(0, 0, 20, 20);
+                }
+                
+                const pattern = this.ctx.createPattern(patternCanvas, 'repeat');
+                this.ctx.fillStyle = pattern;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            drawBorder() {
+                const borderWidth = parseInt(document.getElementById('borderWidth').value);
+                if (borderWidth > 0) {
+                    this.ctx.strokeStyle = document.getElementById('borderColor').value;
+                    this.ctx.lineWidth = borderWidth;
+                    this.ctx.strokeRect(
+                        borderWidth / 2, 
+                        borderWidth / 2, 
+                        this.canvas.width - borderWidth, 
+                        this.canvas.height - borderWidth
+                    );
+                }
+            }
+
+            drawText() {
+                const title = document.getElementById('bookTitle').value;
+                const subtitle = document.getElementById('bookSubtitle').value;
+                const author = document.getElementById('authorName').value;
+                const genre = document.getElementById('genre').value;
+                
+                const titleFont = document.getElementById('titleFont').value;
+                const titleSize = parseInt(document.getElementById('titleSize').value);
+                const titleColor = document.getElementById('titleColor').value;
+                
+                const authorFont = document.getElementById('authorFont').value;
+                const authorSize = parseInt(document.getElementById('authorSize').value);
+                const authorColor = document.getElementById('authorColor').value;
+                
+                const position = document.getElementById('titlePosition').value;
+                const shadowIntensity = parseInt(document.getElementById('textShadow').value);
+                
+                // Set text shadow
+                if (shadowIntensity > 0) {
+                    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                    this.ctx.shadowBlur = shadowIntensity;
+                    this.ctx.shadowOffsetX = shadowIntensity / 2;
+                    this.ctx.shadowOffsetY = shadowIntensity / 2;
+                }
+                
+                this.ctx.textAlign = 'center';
+                
+                let titleY, authorY, subtitleY, genreY;
+                
+                switch (position) {
+                    case 'top':
+                        titleY = 80;
+                        subtitleY = titleY + titleSize + 10;
+                        authorY = this.canvas.height - 60;
+                        genreY = 40;
+                        break;
+                    case 'center':
+                        titleY = this.canvas.height / 2 - 20;
+                        subtitleY = titleY + titleSize + 10;
+                        authorY = this.canvas.height / 2 + 60;
+                        genreY = 40;
+                        break;
+                    case 'bottom':
+                        titleY = this.canvas.height - 120;
+                        subtitleY = titleY + titleSize + 10;
+                        authorY = this.canvas.height - 40;
+                        genreY = 40;
+                        break;
+                }
+                
+                // Draw genre (small text at top)
+                if (genre) {
+                    this.ctx.font = `14px ${authorFont}`;
+                    this.ctx.fillStyle = titleColor;
+                    this.ctx.globalAlpha = 0.8;
+                    this.ctx.fillText(genre.toUpperCase(), this.canvas.width / 2, genreY);
+                    this.ctx.globalAlpha = 1;
+                }
+                
+                // Draw title
+                this.ctx.font = `bold ${titleSize}px ${titleFont}`;
+                this.ctx.fillStyle = titleColor;
+                this.wrapText(title, this.canvas.width / 2, titleY, this.canvas.width - 60, titleSize + 10);
+                
+                // Draw subtitle
+                if (subtitle) {
+                    this.ctx.font = `${Math.floor(titleSize * 0.6)}px ${titleFont}`;
+                    this.ctx.fillStyle = titleColor;
+                    this.ctx.globalAlpha = 0.9;
+                    this.wrapText(subtitle, this.canvas.width / 2, subtitleY, this.canvas.width - 60, titleSize * 0.7);
+                    this.ctx.globalAlpha = 1;
+                }
+                
+                // Draw author
+                this.ctx.font = `${authorSize}px ${authorFont}`;
+                this.ctx.fillStyle = authorColor;
+                this.ctx.fillText(author, this.canvas.width / 2, authorY);
+                
+                // Reset shadow
+                this.ctx.shadowColor = 'transparent';
+                this.ctx.shadowBlur = 0;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+            }
+
+            wrapText(text, x, y, maxWidth, lineHeight) {
+                const words = text.split(' ');
+                let line = '';
+                let currentY = y;
+
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    const metrics = this.ctx.measureText(testLine);
+                    const testWidth = metrics.width;
+                    
+                    if (testWidth > maxWidth && n > 0) {
+                        this.ctx.fillText(line, x, currentY);
+                        line = words[n] + ' ';
+                        currentY += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                this.ctx.fillText(line, x, currentY);
+            }
+
+            downloadCover() {
+                document.getElementById('loadingIndicator').style.display = 'block';
+                
+                setTimeout(() => {
+                    // Create high-resolution canvas for download
+                    const downloadCanvas = document.createElement('canvas');
+                    const downloadCtx = downloadCanvas.getContext('2d');
+                    
+                    // Set high resolution (3x)
+                    downloadCanvas.width = this.canvas.width * 3;
+                    downloadCanvas.height = this.canvas.height * 3;
+                    downloadCtx.scale(3, 3);
+                    
+                    // Temporarily switch context and redraw
+                    const originalCtx = this.ctx;
+                    const originalCanvas = this.canvas;
+                    
+                    this.ctx = downloadCtx;
+                    this.canvas = downloadCanvas;
+                    this.drawCover();
+                    
+                    // Restore original context
+                    this.ctx = originalCtx;
+                    this.canvas = originalCanvas;
+                    
+                    // Download
+                    const link = document.createElement('a');
+                    const title = document.getElementById('bookTitle').value || 'book-cover';
+                    link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_cover.png`;
+                    link.href = downloadCanvas.toDataURL('image/png');
+                    link.click();
+                    
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                }, 100);
+            }
+
+            resetDesign() {
+                if (confirm('Are you sure you want to reset all settings to default?')) {
+                    document.getElementById('bookTitle').value = 'The Great Adventure';
+                    document.getElementById('bookSubtitle').value = '';
+                    document.getElementById('authorName').value = 'Jane Smith';
+                    document.getElementById('genre').value = '';
+                    document.getElementById('bgColor').value = '#2d3748';
+                    document.getElementById('titleColor').value = '#ffffff';
+                    document.getElementById('authorColor').value = '#cccccc';
+                    document.getElementById('titleSize').value = '48';
+                    document.getElementById('authorSize').value = '24';
+                    document.getElementById('textShadow').value = '3';
+                    document.getElementById('borderWidth').value = '0';
+                    document.getElementById('titlePosition').value = 'center';
+                    
+                    // Reset range displays
+                    document.getElementById('titleSizeValue').textContent = '48px';
+                    document.getElementById('authorSizeValue').textContent = '24px';
+                    document.getElementById('shadowValue').textContent = '3px';
+                    document.getElementById('borderValue').textContent = '0px';
+                    
+                    // Reset preset to solid
+                    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelector('[data-preset="solid"]').classList.add('active');
+                    
+                    ['solidControls', 'gradientControls', 'imageControls', 'textureControls'].forEach(id => {
+                        document.getElementById(id).style.display = 'none';
+                    });
+                    document.getElementById('solidControls').style.display = 'block';
+                    
+                    this.backgroundImage = null;
+                    this.currentTexture = null;
+                    this.updateFontPreview();
+                    this.drawCover();
+                }
+            }
+
+            showPreview() {
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.9); display: flex; justify-content: center;
+                    align-items: center; z-index: 1000; cursor: pointer;
+                `;
+                
+                const previewCanvas = document.createElement('canvas');
+                previewCanvas.width = this.canvas.width * 2;
+                previewCanvas.height = this.canvas.height * 2;
+                previewCanvas.style.maxWidth = '90vw';
+                previewCanvas.style.maxHeight = '90vh';
+                previewCanvas.style.boxShadow = '0 0 50px rgba(255,255,255,0.3)';
+                previewCanvas.style.borderRadius = '10px';
+                
+                const previewCtx = previewCanvas.getContext('2d');
+                previewCtx.scale(2, 2);
+                
+                // Temporarily switch context and redraw
+                const originalCtx = this.ctx;
+                const originalCanvas = this.canvas;
+                
+                this.ctx = previewCtx;
+                this.canvas = previewCanvas;
+                this.drawCover();
+                
+                // Restore original context
+                this.ctx = originalCtx;
+                this.canvas = originalCanvas;
+                
+                modal.appendChild(previewCanvas);
+                document.body.appendChild(modal);
+                
+                modal.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+            }
+
+            saveTemplate() {
+                const templateName = prompt('Enter a name for this template:');
+                if (!templateName) return;
+                
+                const template = {
+                    name: templateName,
+                    timestamp: new Date().toISOString(),
+                    settings: {
+                        bookTitle: document.getElementById('bookTitle').value,
+                        bookSubtitle: document.getElementById('bookSubtitle').value,
+                        authorName: document.getElementById('authorName').value,
+                        genre: document.getElementById('genre').value,
+                        bgColor: document.getElementById('bgColor').value,
+                        titleFont: document.getElementById('titleFont').value,
+                        titleSize: document.getElementById('titleSize').value,
+                        titleColor: document.getElementById('titleColor').value,
+                        authorFont: document.getElementById('authorFont').value,
+                        authorSize: document.getElementById('authorSize').value,
+                        authorColor: document.getElementById('authorColor').value,
+                        titlePosition: document.getElementById('titlePosition').value,
+                        textShadow: document.getElementById('textShadow').value,
+                        borderWidth: document.getElementById('borderWidth').value,
+                        borderColor: document.getElementById('borderColor').value,
+                        preset: document.querySelector('.preset-btn.active').dataset.preset,
+                        gradientColor1: document.getElementById('gradientColor1').value,
+                        gradientColor2: document.getElementById('gradientColor2').value,
+                        gradientAngle: document.getElementById('gradientAngle').value
+                    }
+                };
+                
+                this.templates.push(template);
+                localStorage.setItem('bookCoverTemplates', JSON.stringify(this.templates));
+                alert(`Template "${templateName}" saved successfully!`);
+            }
+
+            loadTemplate() {
+                if (this.templates.length === 0) {
+                    alert('No saved templates found.');
+                    return;
+                }
+                
+                let templateList = 'Select a template to load:\n\n';
+                this.templates.forEach((template, index) => {
+                    const date = new Date(template.timestamp).toLocaleDateString();
+                    templateList += `${index + 1}. ${template.name} (${date})\n`;
+                });
+                
+                const selection = prompt(templateList + '\nEnter template number:');
+                const templateIndex = parseInt(selection) - 1;
+                
+                if (templateIndex >= 0 && templateIndex < this.templates.length) {
+                    const template = this.templates[templateIndex];
+                    
+                    // Apply settings
+                    Object.keys(template.settings).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = template.settings[key];
+                            
+                            // Update displays for range inputs
+                            if (key.includes('Size') || key === 'textShadow' || key === 'borderWidth') {
+                                const displayId = key === 'titleSize' ? 'titleSizeValue' :
+                                                key === 'authorSize' ? 'authorSizeValue' :
+                                                key === 'textShadow' ? 'shadowValue' :
+                                                key === 'borderWidth' ? 'borderValue' : null;
+                                if (displayId) {
+                                    document.getElementById(displayId).textContent = template.settings[key] + 'px';
+                                }
+                            }
+                            
+                            if (key === 'gradientAngle') {
+                                document.getElementById('angleValue').textContent = template.settings[key] + '°';
+                            }
+                        }
+                    });
+                    
+                    // Set preset
+                    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`[data-preset="${template.settings.preset}"]`).classList.add('active');
+                    
+                    // Show correct controls
+                    ['solidControls', 'gradientControls', 'imageControls', 'textureControls'].forEach(id => {
+                        document.getElementById(id).style.display = 'none';
+                    });
+                    document.getElementById(template.settings.preset + 'Controls').style.display = 'block';
+                    
+                    this.updateFontPreview();
+                    this.updateGradientPreview();
+                    this.drawCover();
+                    
+                    alert(`Template "${template.name}" loaded successfully!`);
+                } else {
+                    alert('Invalid template selection.');
+                }
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new BookCoverDesigner();
+        });
+    </script>
+</body>
+</html>
