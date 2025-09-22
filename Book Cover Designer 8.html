@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Book Cover Designer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;600;700&family=Crimson+Text:wght@400;600&family=Oswald:wght@400;600&family=Lora:wght@400;700&family=Roboto+Condensed:wght@400;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #783cff;
+            --secondary: #ff3c78;
+            --accent: #3cff9c;
+            --dark-bg: #0a0a0a;
+            --panel-bg: rgba(18, 18, 18, 0.8);
+            --text: #e0e0e0;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #43e97b;
+            --warning: #fee140;
+            --danger: #ff6b6b;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 60, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 60, 120, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(60, 255, 180, 0.15) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 24px;
+            overflow-x: hidden;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 32px;
+            height: calc(100vh - 48px);
+            animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sidebar {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 28px;
+            overflow-y: auto;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-rows: 80px 1fr;
+            gap: 32px;
+        }
+
+        .toolbar {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toolbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(120, 60, 255, 0.05), rgba(255, 60, 120, 0.05));
+            pointer-events: none;
+        }
+
+        .canvas-container {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(120, 60, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(255, 60, 120, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        #previewCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .form-group:nth-child(2) { animation-delay: 0.1s; }
+        .form-group:nth-child(3) { animation-delay: 0.2s; }
+        .form-group:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+
+        .form-group label::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 1px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 0 0 3px rgba(120, 60, 255, 0.2),
+                0 8px 32px rgba(120, 60, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+            font-family: inherit;
+        }
+
+        .color-input {
+            height: 50px !important;
+            cursor: pointer;
+            border-radius: 12px !important;
+            padding: 4px !important;
+        }
+
+        /* Custom scrollbar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(120, 60, 255, 0.6); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(120, 60, 255, 0.8); }
+
+        /* Range slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(120, 60, 255, 0.4);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(120, 60, 255, 0.6);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 
+                0 8px 32px rgba(120, 60, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(120, 60, 255, 0.6),
+                0 8px 16px rgba(255, 60, 120, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Preset Grid */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .preset-btn {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .preset-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(120, 60, 255, 0.1), rgba(255, 60, 120, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: rgba(120, 60, 255, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(120, 60, 255, 0.2);
+        }
+
+        .preset-btn:hover::before {
+            opacity: 1;
+        }
+
+        .preset-btn.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(120, 60, 255, 0.2), rgba(255, 60, 120, 0.2));
+            color: #ffffff;
+            box-shadow: 
+                0 4px 16px rgba(120, 60, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .preset-btn.active::before {
+            opacity: 1;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        /* Toolbar */
+        .toolbar-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .toolbar-left h1 {
+            font-size: 28px;
+            color: #ffffff;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Gradient Picker */
+        .gradient-picker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .gradient-option {
+            width: 100%;
+            height: 48px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gradient-option:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .gradient-option:hover::before {
+            opacity: 1;
+        }
+
+        .gradient-option.active {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 
+                0 4px 16px rgba(120, 60, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Font Preview */
+        .font-preview {
+            margin-top: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .font-preview:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Effects Grid */
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .effect-btn {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .effect-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .effect-btn:hover {
+            border-color: rgba(120, 60, 255, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .effect-btn:hover::before {
+            left: 100%;
+        }
+
+        .effect-btn.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(120, 60, 255, 0.2), rgba(255, 60, 120, 0.2));
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(120, 60, 255, 0.3);
+        }
+
+        /* Dimension Inputs */
+        .dimension-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Gradient Editor */
+        .gradient-editor {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .gradient-stops {
+            display: flex;
+            margin-bottom: 16px;
+            gap: 8px;
+        }
+
+        .gradient-stop {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gradient-stop-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+        .gradient-preview {
+            height: 60px;
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .downloading {
+            animation: pulse 1s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .sidebar {
+                max-height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+            
+            .toolbar-left, .toolbar-right {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .canvas-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2 class="section-title">📚 Book Details</h2>
+            
+            <div class="form-group">
+                <label for="bookTitle">Book Title</label>
+                <input type="text" id="bookTitle" placeholder="Enter your book title" value="The Great Adventure">
+            </div>
+            
+            <div class="form-group">
+                <label for="bookSubtitle">Subtitle (Optional)</label>
+                <input type="text" id="bookSubtitle" placeholder="Enter subtitle" value="A Journey Beyond Imagination">
+            </div>
+            
+            <div class="form-group">
+                <label for="authorName">Author Name</label>
+                <input type="text" id="authorName" placeholder="Enter author name" value="John Smith">
+            </div>
+
+            <h2 class="section-title">🎨 Design</h2>
+            
+            <div class="form-group">
+                <label>Background Style</label>
+                <div class="preset-grid">
+                    <div class="preset-btn active" data-bg="gradient">Gradient</div>
+                    <div class="preset-btn" data-bg="solid">Solid Color</div>
+                    <div class="preset-btn" data-bg="image">Image</div>
+                    <div class="preset-btn" data-bg="pattern">Pattern</div>
+                </div>
+            </div>
+
+            <div class="form-group" id="gradientPicker">
+                <label>Gradient Presets</label>
+                <div class="gradient-picker">
+                    <div class="gradient-option active" style="background: linear-gradient(135deg, #ff9a8b 0%, #a8edea 100%)" data-gradient="linear-gradient(135deg, #ff9a8b 0%, #a8edea 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)" data-gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" data-gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" data-gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)" data-gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)" data-gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)" data-gradient="linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)"></div>
+                    <div class="gradient-option" style="background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%)" data-gradient="linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%)"></div>
+                </div>
+            </div>
+
+            <div class="form-group" id="solidColorPicker" style="display: none;">
+                <label for="bgColor">Background Color</label>
+                <input type="color" id="bgColor" class="color-input" value="#667eea">
+            </div>
+
+            <div class="form-group" id="imageUpload" style="display: none;">
+                <label for="bgImage">Background Image</label>
+                <input type="file" id="bgImage" accept="image/*">
+            </div>
+
+            <h2 class="section-title">🔤 Typography</h2>
+            
+            <div class="form-group">
+                <label for="titleFont">Title Font</label>
+                <select id="titleFont">
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Crimson Text', serif">Crimson Text</option>
+                    <option value="'Oswald', sans-serif">Oswald</option>
+                    <option value="'Lora', serif">Lora</option>
+                    <option value="'Roboto Condensed', sans-serif">Roboto Condensed</option>
+                </select>
+                <div class="font-preview" id="titlePreview">Sample Title Text</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="titleSize">Title Size</label>
+                <input type="range" id="titleSize" min="24" max="72" value="48">
+                <span id="titleSizeValue">48px</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="titleColor">Title Color</label>
+                <input type="color" id="titleColor" class="color-input" value="#ffffff">
+            </div>
+
+            <div class="form-group">
+                <label for="authorFont">Author Font</label>
+                <select id="authorFont">
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                </select>
+            </div>
+
+            <h2 class="section-title">✨ Effects</h2>
+            
+            <div class="effects-grid">
+                <div class="effect-btn active" data-effect="shadow">Text Shadow</div>
+                <div class="effect-btn" data-effect="glow">Text Glow</div>
+                <div class="effect-btn" data-effect="outline">Text Outline</div>
+                <div class="effect-btn" data-effect="none">No Effects</div>
+            </div>
+
+            <h2 class="section-title">📐 Dimensions</h2>
+            
+            <div class="form-group">
+                <label>Preset Sizes</label>
+                <div class="preset-grid">
+                    <div class="preset-btn active" data-size="400,600">Standard</div>
+                    <div class="preset-btn" data-size="375,563">Paperback</div>
+                    <div class="preset-btn" data-size="450,675">Hardcover</div>
+                    <div class="preset-btn" data-size="custom">Custom</div>
+                </div>
+            </div>
+
+            <div class="form-group" id="customDimensions" style="display: none;">
+                <label>Custom Size</label>
+                <div class="dimension-inputs">
+                    <input type="number" id="customWidth" placeholder="Width" value="400">
+                    <input type="number" id="customHeight" placeholder="Height" value="600">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="btn-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button class="btn btn-secondary" id="saveBtn">💾 Save Project</button>
+                    <button class="btn btn-secondary" id="loadBtn">📂 Load Project</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <h1>📖 Professional Book Cover Designer</h1>
+                </div>
+                <div class="toolbar-right">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoomOut">−</button>
+                        <span id="zoomLevel">100%</span>
+                        <button class="zoom-btn" id="zoomIn">+</button>
+                    </div>
+                    <button class="btn btn-secondary" id="resetBtn">🔄 Reset</button>
+                    <button class="btn btn-primary" id="downloadBtn">💾 Download Cover</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="previewCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class BookCoverDesigner {
+            constructor() {
+                this.canvas = new fabric.Canvas('previewCanvas', {
+                    width: 400,
+                    height: 600,
+                    backgroundColor: '#ff9a8b',
+                    selection: false
+                });
+                
+                this.state = {
+                    zoom: 1,
+                    backgroundType: 'gradient',
+                    currentGradient: 'linear-gradient(135deg, #ff9a8b 0%, #a8edea 100%)',
+                    textEffect: 'shadow',
+                    coverWidth: 400,
+                    coverHeight: 600
+                };
+                
+                this.elements = {
+                    bookTitle: document.getElementById('bookTitle'),
+                    bookSubtitle: document.getElementById('bookSubtitle'),
+                    authorName: document.getElementById('authorName'),
+                    titleFont: document.getElementById('titleFont'),
+                    titleSize: document.getElementById('titleSize'),
+                    titleSizeValue: document.getElementById('titleSizeValue'),
+                    titleColor: document.getElementById('titleColor'),
+                    authorFont: document.getElementById('authorFont'),
+                    bgColor: document.getElementById('bgColor'),
+                    bgImage: document.getElementById('bgImage'),
+                    titlePreview: document.getElementById('titlePreview'),
+                    zoomIn: document.getElementById('zoomIn'),
+                    zoomOut: document.getElementById('zoomOut'),
+                    zoomLevel: document.getElementById('zoomLevel'),
+                    resetBtn: document.getElementById('resetBtn'),
+                    downloadBtn: document.getElementById('downloadBtn'),
+                    saveBtn: document.getElementById('saveBtn'),
+                    loadBtn: document.getElementById('loadBtn')
+                };
+                
+                this.initTextObjects();
+                this.init();
+            }
+            
+            initTextObjects() {
+                // Create title text
+                this.titleText = new fabric.Text('The Great Adventure', {
+                    left: 200,
+                    top: 150,
+                    fontSize: 48,
+                    fontFamily: "'Playfair Display', serif",
+                    fill: '#ffffff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    originX: 'center',
+                    originY: 'center',
+                    shadow: 'rgba(0,0,0,0.5) 2px 2px 4px'
+                });
+                
+                // Create subtitle text
+                this.subtitleText = new fabric.Text('A Journey Beyond Imagination', {
+                    left: 200,
+                    top: 230,
+                    fontSize: 24,
+                    fontFamily: "'Playfair Display', serif",
+                    fill: 'rgba(255,255,255,0.85)',
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    originX: 'center',
+                    originY: 'center',
+                    shadow: 'rgba(0,0,0,0.3) 1px 1px 3px'
+                });
+                
+                // Create author text
+                this.authorText = new fabric.Text('John Smith', {
+                    left: 200,
+                    top: 500,
+                    fontSize: 28,
+                    fontFamily: "'Montserrat', sans-serif",
+                    fill: '#ffffff',
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    originX: 'center',
+                    originY: 'center',
+                    textTransform: 'uppercase',
+                    shadow: 'rgba(0,0,0,0.3) 1px 1px 3px'
+                });
+                
+                // Add objects to canvas
+                this.canvas.add(this.titleText);
+                this.canvas.add(this.subtitleText);
+                this.canvas.add(this.authorText);
+                
+                // Add perspective effect
+                this.canvas.set({
+                    perspective: 'perspective(1000px) rotateY(-8deg) rotateX(2deg)',
+                    transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                });
+            }
+            
+            init() {
+                this.bindEvents();
+                this.setupCanvasInteractivity();
+                this.updatePreview();
+            }
+            
+            bindEvents() {
+                // Text inputs
+                this.elements.bookTitle.addEventListener('input', () => this.updateText());
+                this.elements.bookSubtitle.addEventListener('input', () => this.updateText());
+                this.elements.authorName.addEventListener('input', () => this.updateText());
+                
+                // Font controls
+                this.elements.titleFont.addEventListener('change', () => this.updateFonts());
+                this.elements.authorFont.addEventListener('change', () => this.updateFonts());
+                this.elements.titleSize.addEventListener('input', () => this.updateTitleSize());
+                this.elements.titleColor.addEventListener('input', () => this.updateColors());
+                
+                // Background controls
+                this.elements.bgColor.addEventListener('input', () => this.updateBackground());
+                this.elements.bgImage.addEventListener('change', () => this.handleImageUpload());
+                
+                // Preset buttons
+                document.querySelectorAll('.preset-btn[data-bg]').forEach(btn => {
+                    btn.addEventListener('click', () => this.setBackgroundType(btn.dataset.bg));
+                });
+                
+                document.querySelectorAll('.gradient-option').forEach(btn => {
+                    btn.addEventListener('click', () => this.setGradient(btn.dataset.gradient));
+                });
+                
+                document.querySelectorAll('.effect-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.setTextEffect(btn.dataset.effect));
+                });
+                
+                document.querySelectorAll('.preset-btn[data-size]').forEach(btn => {
+                    btn.addEventListener('click', () => this.setSize(btn.dataset.size));
+                });
+                
+                // Toolbar controls
+                this.elements.zoomIn.addEventListener('click', () => this.adjustZoom(0.1));
+                this.elements.zoomOut.addEventListener('click', () => this.adjustZoom(-0.1));
+                this.elements.resetBtn.addEventListener('click', () => this.reset());
+                this.elements.downloadBtn.addEventListener('click', () => this.downloadCover());
+                this.elements.saveBtn.addEventListener('click', () => this.saveProject());
+                this.elements.loadBtn.addEventListener('click', () => this.loadProject());
+                
+                // Custom dimensions
+                document.getElementById('customWidth').addEventListener('input', () => this.updateCustomSize());
+                document.getElementById('customHeight').addEventListener('input', () => this.updateCustomSize());
+            }
+            
+            setupCanvasInteractivity() {
+                // Add mouse rotation effect
+                this.canvas.on('mouse:move', (options) => {
+                    if (!options.pointer) return;
+                    
+                    const pointer = options.pointer;
+                    const centerX = this.canvas.width / 2;
+                    const centerY = this.canvas.height / 2;
+                    
+                    const rotateY = ((pointer.x - centerX) / centerX) * 10;
+                    const rotateX = ((centerY - pointer.y) / centerY) * 5;
+                    
+                    this.canvas.set({
+                        perspective: `perspective(1000px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`
+                    });
+                    this.canvas.renderAll();
+                });
+                
+                // Reset perspective when mouse leaves
+                this.canvas.on('mouse:out', () => {
+                    this.canvas.set({
+                        perspective: 'perspective(1000px) rotateY(-8deg) rotateX(2deg)'
+                    });
+                    this.canvas.renderAll();
+                });
+            }
+            
+            updateText() {
+                const title = this.elements.bookTitle.value || 'Your Book Title';
+                const subtitle = this.elements.bookSubtitle.value;
+                const author = this.elements.authorName.value || 'Author Name';
+                
+                this.titleText.set('text', title);
+                this.subtitleText.set('text', subtitle);
+                this.authorText.set('text', author);
+                
+                // Show/hide subtitle
+                this.subtitleText.set('visible', !!subtitle);
+                
+                this.canvas.renderAll();
+            }
+            
+            updateFonts() {
+                const titleFont = this.elements.titleFont.value;
+                const authorFont = this.elements.authorFont.value;
+                
+                this.titleText.set('fontFamily', titleFont);
+                this.subtitleText.set('fontFamily', titleFont);
+                this.authorText.set('fontFamily', authorFont);
+                this.elements.titlePreview.style.fontFamily = titleFont;
+                this.elements.titlePreview.textContent = titleFont.split(',')[0].replace(/'/g, '');
+                
+                this.canvas.renderAll();
+            }
+            
+            updateTitleSize() {
+                const size = this.elements.titleSize.value;
+                this.titleText.set('fontSize', parseInt(size));
+                this.subtitleText.set('fontSize', parseInt(size) * 0.5);
+                this.elements.titleSizeValue.textContent = size + 'px';
+                
+                this.canvas.renderAll();
+            }
+            
+            updateColors() {
+                const titleColor = this.elements.titleColor.value;
+                this.titleText.set('fill', titleColor);
+                this.authorText.set('fill', titleColor);
+                this.subtitleText.set('fill', `${titleColor}e6`); // 90% opacity
+                
+                this.canvas.renderAll();
+            }
+            
+            setBackgroundType(type) {
+                this.state.backgroundType = type;
+                
+                // Update active button
+                document.querySelectorAll('.preset-btn[data-bg]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.preset-btn[data-bg="${type}"]`).classList.add('active');
+                
+                // Show/hide relevant controls
+                document.getElementById('gradientPicker').style.display = type === 'gradient' ? 'block' : 'none';
+                document.getElementById('solidColorPicker').style.display = type === 'solid' ? 'block' : 'none';
+                document.getElementById('imageUpload').style.display = type === 'image' ? 'block' : 'none';
+                
+                this.updateBackground();
+            }
+            
+            setGradient(gradient) {
+                this.state.currentGradient = gradient;
+                
+                // Update active gradient
+                document.querySelectorAll('.gradient-option').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.gradient-option[data-gradient="${gradient}"]`).classList.add('active');
+                
+                this.updateBackground();
+            }
+            
+            updateBackground() {
+                switch(this.state.backgroundType) {
+                    case 'gradient':
+                        this.canvas.setBackgroundColor(this.state.currentGradient, this.canvas.renderAll.bind(this.canvas));
+                        break;
+                    case 'solid':
+                        this.canvas.setBackgroundColor(this.elements.bgColor.value, this.canvas.renderAll.bind(this.canvas));
+                        break;
+                    case 'pattern':
+                        this.canvas.setBackgroundColor('#f093fb', this.canvas.renderAll.bind(this.canvas));
+                        // In a real app, we'd create a pattern here
+                        break;
+                }
+            }
+            
+            handleImageUpload() {
+                const file = this.elements.bgImage.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        fabric.Image.fromURL(e.target.result, (img) => {
+                            img.scaleToWidth(this.canvas.width);
+                            img.scaleToHeight(this.canvas.height);
+                            this.canvas.setBackgroundImage(img, this.canvas.renderAll.bind(this.canvas), {
+                                originX: 'left',
+                                originY: 'top',
+                                left: 0,
+                                top: 0
+                            });
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            setTextEffect(effect) {
+                this.state.textEffect = effect;
+                
+                // Update active button
+                document.querySelectorAll('.effect-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.effect-btn[data-effect="${effect}"]`).classList.add('active');
+                
+                const textObjects = [this.titleText, this.subtitleText, this.authorText];
+                
+                textObjects.forEach(obj => {
+                    switch(effect) {
+                        case 'shadow':
+                            obj.set('shadow', 'rgba(0,0,0,0.5) 2px 2px 4px');
+                            obj.set('stroke', null);
+                            obj.set('strokeWidth', 0);
+                            break;
+                        case 'glow':
+                            obj.set('shadow', 'rgba(255,255,255,0.8) 0px 0px 10px');
+                            obj.set('stroke', null);
+                            obj.set('strokeWidth', 0);
+                            break;
+                        case 'outline':
+                            obj.set('shadow', null);
+                            obj.set('stroke', 'rgba(0,0,0,0.8)');
+                            obj.set('strokeWidth', 2);
+                            break;
+                        case 'none':
+                            obj.set('shadow', null);
+                            obj.set('stroke', null);
+                            obj.set('strokeWidth', 0);
+                            break;
+                    }
+                });
+                
+                this.canvas.renderAll();
+            }
+            
+            setSize(size) {
+                // Update active button
+                document.querySelectorAll('.preset-btn[data-size]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`.preset-btn[data-size="${size}"]`).classList.add('active');
+                
+                const customDiv = document.getElementById('customDimensions');
+                
+                if (size === 'custom') {
+                    customDiv.style.display = 'block';
+                    this.updateCustomSize();
+                } else {
+                    customDiv.style.display = 'none';
+                    const [width, height] = size.split(',').map(Number);
+                    this.state.coverWidth = width;
+                    this.state.coverHeight = height;
+                    this.resizeCanvas(width, height);
+                }
+            }
+            
+            resizeCanvas(width, height) {
+                this.canvas.setWidth(width);
+                this.canvas.setHeight(height);
+                
+                // Center all text elements
+                this.titleText.set({
+                    left: width / 2,
+                    top: height * 0.25
+                });
+                
+                this.subtitleText.set({
+                    left: width / 2,
+                    top: height * 0.35
+                });
+                
+                this.authorText.set({
+                    left: width / 2,
+                    top: height * 0.85
+                });
+                
+                this.canvas.renderAll();
+            }
+            
+            updateCustomSize() {
+                const width = parseInt(document.getElementById('customWidth').value) || 400;
+                const height = parseInt(document.getElementById('customHeight').value) || 600;
+                
+                this.state.coverWidth = width;
+                this.state.coverHeight = height;
+                this.resizeCanvas(width, height);
+            }
+            
+            adjustZoom(delta) {
+                this.state.zoom = Math.max(0.5, Math.min(2, this.state.zoom + delta));
+                const zoomPercent = Math.round(this.state.zoom * 100);
+                this.elements.zoomLevel.textContent = zoomPercent + '%';
+                
+                // Apply zoom to canvas container
+                document.querySelector('.canvas-container').style.transform = `scale(${this.state.zoom})`;
+            }
+            
+            saveProject() {
+                const projectData = {
+                    title: this.elements.bookTitle.value,
+                    subtitle: this.elements.bookSubtitle.value,
+                    author: this.elements.authorName.value,
+                    titleFont: this.elements.titleFont.value,
+                    titleSize: this.elements.titleSize.value,
+                    titleColor: this.elements.titleColor.value,
+                    authorFont: this.elements.authorFont.value,
+                    backgroundType: this.state.backgroundType,
+                    currentGradient: this.state.currentGradient,
+                    textEffect: this.state.textEffect,
+                    coverWidth: this.state.coverWidth,
+                    coverHeight: this.state.coverHeight
+                };
+                
+                const dataStr = JSON.stringify(projectData);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'book-cover-project.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                // Show save confirmation
+                const originalText = this.elements.saveBtn.textContent;
+                this.elements.saveBtn.textContent = '✅ Saved!';
+                setTimeout(() => {
+                    this.elements.saveBtn.textContent = originalText;
+                }, 2000);
+            }
+            
+            loadProject() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = event => {
+                        try {
+                            const projectData = JSON.parse(event.target.result);
+                            this.applyProjectData(projectData);
+                            
+                            // Show load confirmation
+                            const originalText = this.elements.loadBtn.textContent;
+                            this.elements.loadBtn.textContent = '✅ Loaded!';
+                            setTimeout(() => {
+                                this.elements.loadBtn.textContent = originalText;
+                            }, 2000);
+                        } catch (error) {
+                            alert('Error loading project: Invalid file format');
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            }
+            
+            applyProjectData(projectData) {
+                // Update form fields
+                this.elements.bookTitle.value = projectData.title;
+                this.elements.bookSubtitle.value = projectData.subtitle;
+                this.elements.authorName.value = projectData.author;
+                this.elements.titleFont.value = projectData.titleFont;
+                this.elements.titleSize.value = projectData.titleSize;
+                this.elements.titleColor.value = projectData.titleColor;
+                this.elements.authorFont.value = projectData.authorFont;
+                
+                // Update state
+                this.state.backgroundType = projectData.backgroundType;
+                this.state.currentGradient = projectData.currentGradient;
+                this.state.textEffect = projectData.textEffect;
+                this.state.coverWidth = projectData.coverWidth;
+                this.state.coverHeight = projectData.coverHeight;
+                
+                // Update UI
+                this.setBackgroundType(projectData.backgroundType);
+                this.setGradient(projectData.currentGradient);
+                this.setTextEffect(projectData.textEffect);
+                this.setSize('custom'); // Force custom size to update dimensions
+                
+                // Set custom dimensions
+                document.getElementById('customWidth').value = projectData.coverWidth;
+                document.getElementById('customHeight').value = projectData.coverHeight;
+                
+                // Update canvas
+                this.updatePreview();
+            }
+            
+            reset() {
+                // Reset form values
+                this.elements.bookTitle.value = 'The Great Adventure';
+                this.elements.bookSubtitle.value = 'A Journey Beyond Imagination';
+                this.elements.authorName.value = 'John Smith';
+                this.elements.titleFont.value = "'Playfair Display', serif";
+                this.elements.authorFont.value = "'Montserrat', sans-serif";
+                this.elements.titleSize.value = 48;
+                this.elements.titleColor.value = '#ffffff';
+                this.elements.bgColor.value = '#667eea';
+                
+                // Reset state
+                this.state = {
+                    zoom: 1,
+                    backgroundType: 'gradient',
+                    currentGradient: 'linear-gradient(135deg, #ff9a8b 0%, #a8edea 100%)',
+                    textEffect: 'shadow',
+                    coverWidth: 400,
+                    coverHeight: 600
+                };
+                
+                // Reset UI
+                this.setBackgroundType('gradient');
+                this.setGradient('linear-gradient(135deg, #ff9a8b 0%, #a8edea 100%)');
+                this.setTextEffect('shadow');
+                this.setSize('400,600');
+                this.adjustZoom(1 - this.state.zoom);
+                
+                // Reset canvas
+                this.resizeCanvas(400, 600);
+                
+                // Update display
+                this.updatePreview();
+            }
+            
+            updatePreview() {
+                this.updateText();
+                this.updateFonts();
+                this.updateTitleSize();
+                this.updateColors();
+                this.updateBackground();
+                this.setTextEffect(this.state.textEffect);
+            }
+            
+            downloadCover() {
+                this.elements.downloadBtn.classList.add('downloading');
+                this.elements.downloadBtn.textContent = '⏳ Generating...';
+                
+                // Temporarily remove perspective for clean export
+                const originalPerspective = this.canvas.perspective;
+                this.canvas.set({ perspective: null });
+                
+                setTimeout(() => {
+                    const dataURL = this.canvas.toDataURL({
+                        format: 'png',
+                        quality: 1.0,
+                        multiplier: 2 // Higher resolution
+                    });
+                    
+                    const link = document.createElement('a');
+                    link.download = `${this.elements.bookTitle.value || 'book-cover'}.png`;
+                    link.href = dataURL;
+                    link.click();
+                    
+                    // Restore perspective
+                    this.canvas.set({ perspective: originalPerspective });
+                    this.canvas.renderAll();
+                    
+                    // Show success animation
+                    this.elements.downloadBtn.textContent = '✅ Downloaded!';
+                    setTimeout(() => {
+                        this.elements.downloadBtn.textContent = '💾 Download Cover';
+                        this.elements.downloadBtn.classList.remove('downloading');
+                    }, 2000);
+                }, 500);
+            }
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            const designer = new BookCoverDesigner();
+            
+            // Make designer accessible for debugging
+            window.designer = designer;
+        });
+    </script>
+</body>
+</html>
