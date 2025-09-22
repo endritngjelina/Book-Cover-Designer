@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookCraft Studio | Professional Book Cover Designer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --primary-solid: #6366f1;
+            --secondary: linear-gradient(135deg, #ec4899, #f97316);
+            --accent: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --surface: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(255, 255, 255, 0.12);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 32px 128px rgba(0, 0, 0, 0.25);
+            --blur: blur(20px);
+            --border-radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 60%);
+            animation: backgroundShift 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, -20px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 400px 1fr 380px;
+            gap: 32px;
+            min-height: calc(100vh - 40px);
+            position: relative;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .panel {
+            background: var(--glass);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            grid-column: 1 / -1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            position: relative;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation: textGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .controls-panel {
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .controls-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .control-group {
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -32px;
+            width: 2px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 1px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .control-group:hover::before {
+            opacity: 1;
+        }
+
+        .control-group h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .control-group h3::before {
+            content: attr(data-icon);
+            font-size: 1.5rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group.featured {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: var(--surface);
+            color: var(--text-primary);
+            backdrop-filter: var(--blur);
+            position: relative;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-solid);
+            background: var(--surface-hover);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-group {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: var(--transition);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .input-group:hover::before {
+            left: 100%;
+        }
+
+        .color-input {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            border: 3px solid var(--glass-border);
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .color-input:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-solid);
+        }
+
+        .color-input::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--primary);
+            border-radius: 16px;
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .color-input:hover::before {
+            opacity: 1;
+        }
+
+        .range-input {
+            -webkit-appearance: none;
+            height: 8px;
+            background: var(--surface);
+            border-radius: 4px;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .range-input::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            width: var(--value, 50%);
+            transition: var(--transition);
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .range-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            position: relative;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            padding: 20px;
+            background: var(--glass);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: var(--blur);
+        }
+
+        .canvas-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--primary);
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .canvas-wrapper:hover::before {
+            opacity: 0.5;
+        }
+
+        #bookCanvas {
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            max-width: 100%;
+            height: auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        #bookCanvas:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--text-primary);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+        }
+
+        .btn-ghost {
+            background: var(--surface);
+            border: 2px solid var(--glass-border);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--primary-solid);
+            background: var(--surface-hover);
+        }
+
+        .preset-templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .template-card {
+            background: var(--surface);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 16px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: var(--blur);
+        }
+
+        .template-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .template-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-solid);
+        }
+
+        .template-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .template-card.active {
+            border-color: var(--primary-solid);
+            background: var(--surface-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .features-panel {
+            height: fit-content;
+        }
+
+        .feature-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--surface);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            backdrop-filter: var(--blur);
+            transition: var(--transition);
+        }
+
+        .feature-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .feature-section:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-section h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-btn {
+            background: var(--surface);
+            color: var(--text-secondary);
+            border: 2px solid var(--glass-border);
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            margin: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .toggle-btn.active {
+            background: var(--primary);
+            color: var(--text-primary);
+            border-color: transparent;
+            box-shadow: var(--shadow-md);
+        }
+
+        .toggle-btn.active::before {
+            left: 0;
+        }
+
+        .gradient-picker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .gradient-option {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-option::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: var(--primary);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gradient-option:hover, .gradient-option.selected {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .gradient-option:hover::before, .gradient-option.selected::before {
+            opacity: 1;
+        }
+
+        .text-effects {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .effect-btn {
+            padding: 10px 16px;
+            border: 2px solid var(--glass-border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .effect-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .effect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .effect-btn.active {
+            background: var(--accent);
+            color: var(--text-primary);
+            border-color: transparent;
+            box-shadow: var(--shadow-md);
+        }
+
+        .effect-btn.active::before {
+            left: 0;
+        }
+
+        .dimensions-display {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            backdrop-filter: var(--blur);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dimensions-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0%, 100% { transform: scaleX(0); transform-origin: left; }
+            50% { transform: scaleX(1); transform-origin: left; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .stat-item {
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            background: var(--surface-hover);
+            transform: translateY(-1px);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: var(--blur);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--primary-solid);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+
+        .loader::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 3px solid transparent;
+            border-bottom: 3px solid var(--primary-solid);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            color: var(--text-primary);
+            font-weight: 600;
+            backdrop-filter: var(--blur);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(400px);
+            transition: var(--transition);
+            z-index: 10000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--primary-solid);
+        }
+
+        /* Advanced hover effects */
+        .interactive-element {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-element::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .interactive-element:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Responsive design improvements */
+        @media (max-width: 1400px) {
+            .container {
+                grid-template-columns: 360px 1fr 340px;
+                gap: 24px;
+            }
+            
+            .panel {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 16px;
+            }
+            
+            .header {
+                margin-bottom: 24px;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .controls-panel {
+                max-height: none;
+                order: 2;
+            }
+            
+            .canvas-container {
+                order: 1;
+            }
+            
+            .features-panel {
+                order: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+                gap: 16px;
+            }
+            
+            .panel {
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .canvas-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+            
+            .preset-templates {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .gradient-picker {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Dark mode enhancements */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --surface: rgba(255, 255, 255, 0.05);
+                --surface-hover: rgba(255, 255, 255, 0.08);
+                --glass: rgba(255, 255, 255, 0.08);
+                --glass-border: rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --glass-border: rgba(255, 255, 255, 0.4);
+                --surface: rgba(255, 255, 255, 0.15);
+            }
+            
+            .btn {
+                border: 2px solid var(--text-primary);
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .floating-particles {
+                display: none;
+            }
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface);
+            border-radius: 4px;
+            border: 1px solid var(--glass-border);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--surface-hover);
+        }
+
+        /* Focus indicators for accessibility */
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--primary-solid);
+            outline-offset: 2px;
+        }
+
+        /* Selection styles */
+        ::selection {
+            background: rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+        }
+
+        /* Tooltips */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        [data-tooltip]:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            margin-bottom: 4px;
+        }
+
+        .stat-value.excellent { color: #10b981; }
+        .stat-value.good { color: #3b82f6; }
+        .stat-value.warning { color: #f59e0b; }
+        .stat-value.poor { color: #ef4444; }
+        .stat-value.fair { color: #8b5cf6; }
+        .stat-value.harmonious { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="floating-particles"></div>
+    <div class="container">
+        <div class="header panel">
+            <h1 data-text="BookCraft Studio">BookCraft Studio</h1>
+            <p>Professional Book Cover Designer - Create stunning covers with advanced typography and design tools</p>
+        </div>
+
+        <div class="controls-panel panel">
+            <div class="control-group">
+                <h3 data-icon="📖">Book Details</h3>
+                <div class="form-group featured">
+                    <div class="input-group">
+                        <label for="bookTitle">Title</label>
+                        <input type="text" id="bookTitle" placeholder="Enter your book title" value="The Great Adventure">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="bookSubtitle">Subtitle</label>
+                        <input type="text" id="bookSubtitle" placeholder="Optional subtitle">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="authorName">Author</label>
+                        <input type="text" id="authorName" placeholder="Author name" value="John Smith">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <select id="genre">
+                        <option value="fiction">Fiction</option>
+                        <option value="non-fiction">Non-Fiction</option>
+                        <option value="mystery">Mystery</option>
+                        <option value="romance">Romance</option>
+                        <option value="sci-fi">Science Fiction</option>
+                        <option value="fantasy">Fantasy</option>
+                        <option value="biography">Biography</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3 data-icon="🎨">Background Design</h3>
+                <div class="form-group">
+                    <label>Background Type</label>
+                    <div class="text-effects">
+                        <button class="toggle-btn active interactive-element" data-bg-type="color" data-tooltip="Solid color background">Solid Color</button>
+                        <button class="toggle-btn interactive-element" data-bg-type="gradient" data-tooltip="Gradient background">Gradient</button>
+                        <button class="toggle-btn interactive-element" data-bg-type="image" data-tooltip="Custom image background">Image</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bgColor">Background Color</label>
+                    <input type="color" id="bgColor" class="color-input" value="#2563eb" data-tooltip="Choose background color">
+                </div>
+                <div class="gradient-picker">
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #667eea, #764ba2)" data-gradient="0" data-tooltip="Purple Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #f093fb, #f5576c)" data-gradient="1" data-tooltip="Pink Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #4facfe, #00f2fe)" data-gradient="2" data-tooltip="Blue Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #43e97b, #38f9d7)" data-gradient="3" data-tooltip="Green Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #fa709a, #fee140)" data-gradient="4" data-tooltip="Sunset Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #a8edea, #fed6e3)" data-gradient="5" data-tooltip="Pastel Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #ff9a9e, #fecfef)" data-gradient="6" data-tooltip="Coral Gradient"></div>
+                    <div class="gradient-option interactive-element" style="background: linear-gradient(135deg, #ffecd2, #fcb69f)" data-gradient="7" data-tooltip="Peach Gradient"></div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="bgImage">Upload Background Image</label>
+                        <input type="file" id="bgImage" accept="image/*">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3 data-icon="✍️">Typography</h3>
+                <div class="form-group">
+                    <label for="titleFont">Title Font</label>
+                    <select id="titleFont">
+                        <option value="Georgia">Georgia (Serif)</option>
+                        <option value="Arial">Arial (Sans-serif)</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Garamond">Garamond</option>
+                        <option value="Impact">Impact</option>
+                        <option value="Courier New">Courier New</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="titleSize">Title Size: <span id="titleSizeValue">48px</span></label>
+                    <input type="range" id="titleSize" class="range-input" min="24" max="72" value="48">
+                </div>
+                <div class="form-group">
+                    <label for="titleColor">Title Color</label>
+                    <input type="color" id="titleColor" class="color-input" value="#ffffff" data-tooltip="Choose title color">
+                </div>
+                <div class="form-group">
+                    <label for="authorFont">Author Font</label>
+                    <select id="authorFont">
+                        <option value="Arial">Arial (Sans-serif)</option>
+                        <option value="Georgia">Georgia (Serif)</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Helvetica">Helvetica</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="authorSize">Author Size: <span id="authorSizeValue">24px</span></label>
+                    <input type="range" id="authorSize" class="range-input" min="16" max="36" value="24">
+                </div>
+                <div class="form-group">
+                    <label for="authorColor">Author Color</label>
+                    <input type="color" id="authorColor" class="color-input" value="#ffffff" data-tooltip="Choose author color">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3 data-icon="🎭">Text Effects</h3>
+                <div class="text-effects">
+                    <button class="effect-btn interactive-element" data-effect="shadow" data-tooltip="Add drop shadow">Drop Shadow</button>
+                    <button class="effect-btn interactive-element" data-effect="outline" data-tooltip="Add text outline">Outline</button>
+                    <button class="effect-btn interactive-element" data-effect="glow" data-tooltip="Add glow effect">Glow Effect</button>
+                    <button class="effect-btn interactive-element" data-effect="gradient" data-tooltip="Apply gradient text">Gradient Text</button>
+                </div>
+                <div class="form-group">
+                    <label for="shadowIntensity">Effect Intensity: <span id="shadowIntensityValue">5</span></label>
+                    <input type="range" id="shadowIntensity" class="range-input" min="1" max="15" value="5">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3 data-icon="📏">Layout & Positioning</h3>
+                <div class="form-group">
+                    <label for="titleY">Title Position: <span id="titleYValue">30%</span></label>
+                    <input type="range" id="titleY" class="range-input" min="10" max="50" value="30">
+                </div>
+                <div class="form-group">
+                    <label for="authorY">Author Position: <span id="authorYValue">85%</span></label>
+                    <input type="range" id="authorY" class="range-input" min="60" max="95" value="85">
+                </div>
+                <div class="form-group">
+                    <label>Text Alignment</label>
+                    <div class="text-effects">
+                        <button class="toggle-btn active interactive-element" data-align="center" data-tooltip="Center align">Center</button>
+                        <button class="toggle-btn interactive-element" data-align="left" data-tooltip="Left align">Left</button>
+                        <button class="toggle-btn interactive-element" data-align="right" data-tooltip="Right align">Right</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3 data-icon="📋">Quick Templates</h3>
+                <div class="preset-templates">
+                    <div class="template-card interactive-element" data-template="modern" data-tooltip="Modern design">Modern</div>
+                    <div class="template-card interactive-element" data-template="classic" data-tooltip="Classic design">Classic</div>
+                    <div class="template-card interactive-element" data-template="minimal" data-tooltip="Minimal design">Minimal</div>
+                    <div class="template-card interactive-element" data-template="bold" data-tooltip="Bold design">Bold</div>
+                    <div class="template-card interactive-element" data-template="elegant" data-tooltip="Elegant design">Elegant</div>
+                    <div class="template-card interactive-element" data-template="dark" data-tooltip="Dark theme">Dark Theme</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container panel">
+            <div class="dimensions-display">
+                <div>Canvas: 600 × 900 pixels</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Standard Book Cover Format</div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="bookCanvas" width="600" height="900"></canvas>
+            </div>
+            <div class="canvas-controls">
+                <button id="downloadBtn" class="btn interactive-element" data-tooltip="Download your cover">
+                    <span>📥</span> Download Cover
+                </button>
+                <button id="previewBtn" class="btn btn-secondary interactive-element" data-tooltip="Preview in new window">
+                    <span>👁️</span> Full Preview
+                </button>
+                <button id="resetBtn" class="btn btn-ghost interactive-element" data-tooltip="Reset to defaults">
+                    <span>🔄</span> Reset Design
+                </button>
+            </div>
+        </div>
+
+        <div class="features-panel panel">
+            <div class="feature-section">
+                <h4><i class="fas fa-trophy"></i> Professional Features</h4>
+                <div class="form-group">
+                    <label for="coverFormat">Export Format</label>
+                    <select id="coverFormat">
+                        <option value="png">PNG (High Quality)</option>
+                        <option value="jpeg">JPEG (Smaller Size)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="resolution">Resolution</label>
+                    <select id="resolution">
+                        <option value="1">Standard (600x900)</option>
+                        <option value="1.5">High (900x1350)</option>
+                        <option value="2">Print Ready (1200x1800)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="feature-section">
+                <h4><i class="fas fa-paint-brush"></i> Design Tools</h4>
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <button class="btn btn-ghost interactive-element" id="undoBtn" data-tooltip="Undo last action">↶ Undo</button>
+                    <button class="btn btn-ghost interactive-element" id="redoBtn" data-tooltip="Redo last action">↷ Redo</button>
+                </div>
+                <div class="form-group">
+                    <label for="opacity">Overall Opacity: <span id="opacityValue">100%</span></label>
+                    <input type="range" id="opacity" class="range-input" min="50" max="100" value="100">
+                </div>
+            </div>
+
+            <div class="feature-section">
+                <h4><i class="fas fa-save"></i> Save & Load</h4>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-accent interactive-element" id="saveDesign" data-tooltip="Save design as JSON">💾 Save</button>
+                    <button class="btn btn-secondary interactive-element" id="loadDesign" data-tooltip="Load saved design">📂 Load</button>
+                </div>
+                <input type="file" id="loadFile" accept=".json" style="display: none;">
+            </div>
+
+            <div class="feature-section">
+                <h4><i class="fas fa-chart-bar"></i> Design Analytics</h4>
+                <div class="stats-grid" id="designStats">
+                    <div class="stat-item">
+                        <div class="stat-label">Title Length</div>
+                        <div class="stat-value" id="titleLength">17 chars</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Color Contrast</div>
+                        <div class="stat-value" id="colorContrast">Good</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Readability</div>
+                        <div class="stat-value" id="readability">Excellent</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Font Pairing</div>
+                        <div class="stat-value" id="fontPairing">Harmonious</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-section">
+                <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+                <button class="btn btn-accent interactive-element" id="centerElements" data-tooltip="Center all text elements">Center All Elements</button>
+                <button class="btn btn-secondary interactive-element" id="autoOptimize" data-tooltip="Auto-optimize design" style="margin-top: 8px;">Auto Optimize</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <script>
+        // Global variables and state management
+        const canvas = document.getElementById('bookCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let designState = {
+            title: 'The Great Adventure',
+            subtitle: '',
+            author: 'John Smith',
+            backgroundType: 'color',
+            backgroundColor: '#2563eb',
+            backgroundImage: null,
+            titleFont: 'Georgia',
+            titleSize: 48,
+            titleColor: '#ffffff',
+            authorFont: 'Arial',
+            authorSize: 24,
+            authorColor: '#ffffff',
+            titleY: 30,
+            authorY: 85,
+            textAlign: 'center',
+            effects: [],
+            effectIntensity: 5,
+            gradient: 0
+        };
+
+        let history = [JSON.parse(JSON.stringify(designState))];
+        let historyIndex = 0;
+
+        // Gradient definitions
+        const gradients = [
+            ['#667eea', '#764ba2'],
+            ['#f093fb', '#f5576c'],
+            ['#4facfe', '#00f2fe'],
+            ['#43e97b', '#38f9d7'],
+            ['#fa709a', '#fee140'],
+            ['#a8edea', '#fed6e3'],
+            ['#ff9a9e', '#fecfef'],
+            ['#ffecd2', '#fcb69f']
+        ];
+
+        // Template definitions
+        const templates = {
+            modern: {
+                backgroundColor: '#1f2937',
+                titleFont: 'Arial',
+                titleSize: 52,
+                titleColor: '#ffffff',
+                authorFont: 'Arial',
+                authorSize: 20,
+                authorColor: '#9ca3af',
+                titleY: 35,
+                authorY: 80,
+                effects: ['shadow']
+            },
+            classic: {
+                backgroundColor: '#8b5a3c',
+                titleFont: 'Georgia',
+                titleSize: 44,
+                titleColor: '#f9fafb',
+                authorFont: 'Georgia',
+                authorSize: 22,
+                authorColor: '#f3f4f6',
+                titleY: 25,
+                authorY: 85,
+                effects: ['outline']
+            },
+            minimal: {
+                backgroundColor: '#ffffff',
+                titleFont: 'Helvetica',
+                titleSize: 42,
+                titleColor: '#111827',
+                authorFont: 'Helvetica',
+                authorSize: 18,
+                authorColor: '#6b7280',
+                titleY: 40,
+                authorY: 90,
+                effects: []
+            },
+            bold: {
+                backgroundColor: '#dc2626',
+                titleFont: 'Impact',
+                titleSize: 58,
+                titleColor: '#ffffff',
+                authorFont: 'Arial',
+                authorSize: 24,
+                authorColor: '#fef2f2',
+                titleY: 30,
+                authorY: 85,
+                effects: ['shadow', 'outline']
+            },
+            elegant: {
+                backgroundColor: '#374151',
+                titleFont: 'Garamond',
+                titleSize: 46,
+                titleColor: '#f9fafb',
+                authorFont: 'Garamond',
+                authorSize: 20,
+                authorColor: '#d1d5db',
+                titleY: 35,
+                authorY: 82,
+                effects: ['glow']
+            },
+            dark: {
+                backgroundColor: '#000000',
+                titleFont: 'Arial',
+                titleSize: 50,
+                titleColor: '#ffffff',
+                authorFont: 'Arial',
+                authorSize: 22,
+                authorColor: '#9ca3af',
+                titleY: 32,
+                authorY: 88,
+                effects: ['glow', 'shadow']
+            }
+        };
+
+        // Enhanced initialization with particles and loading effects
+        function init() {
+            showLoading();
+            createFloatingParticles();
+            setupEventListeners();
+            renderCanvas();
+            updateUI();
+            updateAnalytics();
+            hideLoading();
+            showNotification('BookCraft Studio loaded successfully!', 'success');
+        }
+
+        // Create floating particle effects
+        function createFloatingParticles() {
+            const particleContainer = document.querySelector('.floating-particles');
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        // Enhanced loading system
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.remove('active');
+            }, 800);
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 400);
+            }, 3000);
+        }
+
+        // Enhanced event listeners with better UX
+        function setupEventListeners() {
+            // Basic inputs with debouncing
+            let titleTimeout;
+            document.getElementById('bookTitle').addEventListener('input', (e) => {
+                clearTimeout(titleTimeout);
+                titleTimeout = setTimeout(() => {
+                    designState.title = e.target.value;
+                    renderCanvas();
+                    updateAnalytics();
+                    saveToHistory();
+                }, 300);
+            });
+
+            let subtitleTimeout;
+            document.getElementById('bookSubtitle').addEventListener('input', (e) => {
+                clearTimeout(subtitleTimeout);
+                subtitleTimeout = setTimeout(() => {
+                    designState.subtitle = e.target.value;
+                    renderCanvas();
+                }, 300);
+            });
+
+            let authorTimeout;
+            document.getElementById('authorName').addEventListener('input', (e) => {
+                clearTimeout(authorTimeout);
+                authorTimeout = setTimeout(() => {
+                    designState.author = e.target.value;
+                    renderCanvas();
+                    updateAnalytics();
+                }, 300);
+            });
+
+            // Enhanced background controls with animations
+            document.querySelectorAll('[data-bg-type]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('[data-bg-type]').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    designState.backgroundType = e.target.dataset.bgType;
+                    renderCanvas();
+                    saveToHistory();
+                    showNotification(`Background type changed to ${e.target.textContent}`, 'info');
+                });
+            });
+
+            document.getElementById('bgColor').addEventListener('input', (e) => {
+                designState.backgroundColor = e.target.value;
+                renderCanvas();
+                updateAnalytics();
+            });
+
+            // Enhanced gradient picker with selection feedback
+            document.querySelectorAll('.gradient-option').forEach((option, index) => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.gradient-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    designState.gradient = index;
+                    designState.backgroundType = 'gradient';
+                    document.querySelectorAll('[data-bg-type]').forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-bg-type="gradient"]').classList.add('active');
+                    renderCanvas();
+                    saveToHistory();
+                    showNotification('Gradient applied successfully!', 'success');
+                });
+            });
+
+            // Enhanced background image upload
+            document.getElementById('bgImage').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    showLoading();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            designState.backgroundImage = img;
+                            designState.backgroundType = 'image';
+                            document.querySelectorAll('[data-bg-type]').forEach(b => b.classList.remove('active'));
+                            document.querySelector('[data-bg-type="image"]').classList.add('active');
+                            renderCanvas();
+                            saveToHistory();
+                            hideLoading();
+                            showNotification('Background image uploaded successfully!', 'success');
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Enhanced typography controls
+            document.getElementById('titleFont').addEventListener('change', (e) => {
+                designState.titleFont = e.target.value;
+                renderCanvas();
+                updateAnalytics();
+                saveToHistory();
+            });
+
+            document.getElementById('titleSize').addEventListener('input', (e) => {
+                designState.titleSize = parseInt(e.target.value);
+                document.getElementById('titleSizeValue').textContent = e.target.value + 'px';
+                renderCanvas();
+                updateRangeBackground(e.target);
+            });
+
+            document.getElementById('titleColor').addEventListener('input', (e) => {
+                designState.titleColor = e.target.value;
+                renderCanvas();
+                updateAnalytics();
+            });
+
+            document.getElementById('authorFont').addEventListener('change', (e) => {
+                designState.authorFont = e.target.value;
+                renderCanvas();
+                updateAnalytics();
+                saveToHistory();
+            });
+
+            document.getElementById('authorSize').addEventListener('input', (e) => {
+                designState.authorSize = parseInt(e.target.value);
+                document.getElementById('authorSizeValue').textContent = e.target.value + 'px';
+                renderCanvas();
+                updateRangeBackground(e.target);
+            });
+
+            document.getElementById('authorColor').addEventListener('input', (e) => {
+                designState.authorColor = e.target.value;
+                renderCanvas();
+            });
+
+            // Enhanced position controls
+            document.getElementById('titleY').addEventListener('input', (e) => {
+                designState.titleY = parseInt(e.target.value);
+                document.getElementById('titleYValue').textContent = e.target.value + '%';
+                renderCanvas();
+                updateRangeBackground(e.target);
+            });
+
+            document.getElementById('authorY').addEventListener('input', (e) => {
+                designState.authorY = parseInt(e.target.value);
+                document.getElementById('authorYValue').textContent = e.target.value + '%';
+                renderCanvas();
+                updateRangeBackground(e.target);
+            });
+
+            // Enhanced text alignment
+            document.querySelectorAll('[data-align]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('[data-align]').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    designState.textAlign = e.target.dataset.align;
+                    renderCanvas();
+                    saveToHistory();
+                });
+            });
+
+            // Enhanced text effects with better feedback
+            document.querySelectorAll('[data-effect]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const effect = e.target.dataset.effect;
+                    if (designState.effects.includes(effect)) {
+                        designState.effects = designState.effects.filter(eff => eff !== effect);
+                        e.target.classList.remove('active');
+                        showNotification(`${effect} effect removed`, 'info');
+                    } else {
+                        designState.effects.push(effect);
+                        e.target.classList.add('active');
+                        showNotification(`${effect} effect applied`, 'success');
+                    }
+                    renderCanvas();
+                    saveToHistory();
+                });
+            });
+
+            document.getElementById('shadowIntensity').addEventListener('input', (e) => {
+                designState.effectIntensity = parseInt(e.target.value);
+                document.getElementById('shadowIntensityValue').textContent = e.target.value;
+                renderCanvas();
+                updateRangeBackground(e.target);
+            });
+
+            // Enhanced template selection with active states
+            document.querySelectorAll('[data-template]').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const templateName = e.target.dataset.template;
+                    applyTemplate(templateName);
+                    showNotification(`${templateName} template applied!`, 'success');
+                });
+            });
+
+            // Enhanced canvas controls
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                showLoading();
+                setTimeout(() => {
+                    downloadCover();
+                    hideLoading();
+                    showNotification('Cover downloaded successfully!', 'success');
+                }, 500);
+            });
+
+            document.getElementById('previewBtn').addEventListener('click', () => {
+                previewCover();
+                showNotification('Preview opened in new window', 'info');
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', resetDesign);
+
+            // Enhanced advanced features
+            document.getElementById('undoBtn').addEventListener('click', () => {
+                undo();
+                showNotification('Action undone', 'info');
+            });
+
+            document.getElementById('redoBtn').addEventListener('click', () => {
+                redo();
+                showNotification('Action redone', 'info');
+            });
+            
+            document.getElementById('opacity').addEventListener('input', (e) => {
+                document.getElementById('opacityValue').textContent = e.target.value + '%';
+                renderCanvas();
+                updateRangeBackground(e.target);
+            });
+
+            document.getElementById('saveDesign').addEventListener('click', () => {
+                saveDesign();
+                showNotification('Design saved successfully!', 'success');
+            });
+
+            document.getElementById('loadDesign').addEventListener('click', () => {
+                document.getElementById('loadFile').click();
+            });
+
+            document.getElementById('loadFile').addEventListener('change', loadDesign);
+
+            document.getElementById('centerElements').addEventListener('click', () => {
+                centerElements();
+                showNotification('Elements centered!', 'success');
+            });
+
+            document.getElementById('autoOptimize').addEventListener('click', () => {
+                showLoading();
+                setTimeout(() => {
+                    autoOptimize();
+                    hideLoading();
+                    showNotification('Design optimized automatically!', 'success');
+                }, 800);
+            });
+
+            // Initialize range backgrounds
+            document.querySelectorAll('.range-input').forEach(updateRangeBackground);
+        }
+
+        // Update range input visual feedback
+        function updateRangeBackground(input) {
+            const value = (input.value - input.min) / (input.max - input.min) * 100;
+            input.style.setProperty('--value', value + '%');
+        }
+
+        // Apply template function
+        function applyTemplate(templateName) {
+            const template = templates[templateName];
+            if (template) {
+                Object.assign(designState, template);
+                updateUI();
+                renderCanvas();
+                updateAnalytics();
+                saveToHistory();
+            }
+        }
+
+        // Update UI elements to match current state
+        function updateUI() {
+            document.getElementById('bookTitle').value = designState.title;
+            document.getElementById('authorName').value = designState.author;
+            document.getElementById('bgColor').value = designState.backgroundColor;
+            document.getElementById('titleFont').value = designState.titleFont;
+            document.getElementById('titleSize').value = designState.titleSize;
+            document.getElementById('titleSizeValue').textContent = designState.titleSize + 'px';
+            document.getElementById('titleColor').value = designState.titleColor;
+            document.getElementById('authorFont').value = designState.authorFont;
+            document.getElementById('authorSize').value = designState.authorSize;
+            document.getElementById('authorSizeValue').textContent = designState.authorSize + 'px';
+            document.getElementById('authorColor').value = designState.authorColor;
+            document.getElementById('titleY').value = designState.titleY;
+            document.getElementById('titleYValue').textContent = designState.titleY + '%';
+            document.getElementById('authorY').value = designState.authorY;
+            document.getElementById('authorYValue').textContent = designState.authorY + '%';
+            
+            // Update active effects
+            document.querySelectorAll('[data-effect]').forEach(btn => {
+                btn.classList.toggle('active', designState.effects.includes(btn.dataset.effect));
+            });
+        }
+
+        // Main rendering function
+        function renderCanvas() {
+            const resolution = parseFloat(document.getElementById('resolution')?.value || 1);
+            const actualWidth = 600 * resolution;
+            const actualHeight = 900 * resolution;
+            
+            // Set canvas size
+            canvas.width = actualWidth;
+            canvas.height = actualHeight;
+            canvas.style.width = '600px';
+            canvas.style.height = '900px';
+            
+            ctx.clearRect(0, 0, actualWidth, actualHeight);
+            
+            // Scale context for resolution
+            ctx.scale(resolution, resolution);
+            
+            drawBackground();
+            drawText();
+            
+            // Reset scale
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+
+        // Draw background
+        function drawBackground() {
+            if (designState.backgroundType === 'color') {
+                ctx.fillStyle = designState.backgroundColor;
+                ctx.fillRect(0, 0, 600, 900);
+            } else if (designState.backgroundType === 'gradient') {
+                const gradient = ctx.createLinearGradient(0, 0, 600, 900);
+                const colors = gradients[designState.gradient];
+                gradient.addColorStop(0, colors[0]);
+                gradient.addColorStop(1, colors[1]);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 600, 900);
+            } else if (designState.backgroundType === 'image' && designState.backgroundImage) {
+                ctx.drawImage(designState.backgroundImage, 0, 0, 600, 900);
+            }
+        }
+
+        // Draw text with effects
+        function drawText() {
+            const opacity = parseInt(document.getElementById('opacity')?.value || 100) / 100;
+            ctx.globalAlpha = opacity;
+            
+            // Draw title
+            drawTextWithEffects(
+                designState.title,
+                designState.titleFont,
+                designState.titleSize,
+                designState.titleColor,
+                designState.titleY,
+                'title'
+            );
+            
+            // Draw subtitle if exists
+            if (designState.subtitle) {
+                drawTextWithEffects(
+                    designState.subtitle,
+                    designState.titleFont,
+                    Math.floor(designState.titleSize * 0.6),
+                    designState.titleColor,
+                    designState.titleY + 8,
+                    'subtitle'
+                );
+            }
+            
+            // Draw author
+            drawTextWithEffects(
+                designState.author,
+                designState.authorFont,
+                designState.authorSize,
+                designState.authorColor,
+                designState.authorY,
+                'author'
+            );
+            
+            ctx.globalAlpha = 1;
+        }
+
+        // Draw text with various effects
+        function drawTextWithEffects(text, font, size, color, yPercent, type) {
+            if (!text) return;
+            
+            const y = (yPercent / 100) * 900;
+            let x = 300; // Center by default
+            
+            ctx.font = `${size}px ${font}`;
+            ctx.textAlign = designState.textAlign;
+            
+            if (designState.textAlign === 'left') x = 50;
+            if (designState.textAlign === 'right') x = 550;
+            
+            // Apply effects in order
+            if (designState.effects.includes('shadow')) {
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = designState.effectIntensity;
+                ctx.shadowOffsetX = designState.effectIntensity / 2;
+                ctx.shadowOffsetY = designState.effectIntensity / 2;
+            }
+            
+            if (designState.effects.includes('glow')) {
+                ctx.shadowColor = color;
+                ctx.shadowBlur = designState.effectIntensity * 2;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+            
+            // Main text
+            if (designState.effects.includes('gradient') && type === 'title') {
+                const gradient = ctx.createLinearGradient(x - 200, y - size/2, x + 200, y + size/2);
+                gradient.addColorStop(0, color);
+                gradient.addColorStop(0.5, '#ffffff');
+                gradient.addColorStop(1, color);
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = color;
+            }
+            
+            ctx.fillText(text, x, y);
+            
+            // Outline effect
+            if (designState.effects.includes('outline')) {
+                ctx.strokeStyle = getContrastColor(color);
+                ctx.lineWidth = Math.max(1, designState.effectIntensity / 3);
+                ctx.strokeText(text, x, y);
+            }
+            
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+
+        // Utility function to get contrasting color
+        function getContrastColor(hexColor) {
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128 ? '#000000' : '#ffffff';
+        }
+
+        // Download functionality
+        function downloadCover() {
+            const format = document.getElementById('coverFormat')?.value || 'png';
+            const resolution = parseFloat(document.getElementById('resolution')?.value || 1);
+            
+            // Create high-resolution canvas
+            const downloadCanvas = document.createElement('canvas');
+            const downloadCtx = downloadCanvas.getContext('2d');
+            const width = 600 * resolution;
+            const height = 900 * resolution;
+            
+            downloadCanvas.width = width;
+            downloadCanvas.height = height;
+            
+            // Render at high resolution
+            downloadCtx.scale(resolution, resolution);
+            
+            // Draw background
+            if (designState.backgroundType === 'color') {
+                downloadCtx.fillStyle = designState.backgroundColor;
+                downloadCtx.fillRect(0, 0, 600, 900);
+            } else if (designState.backgroundType === 'gradient') {
+                const gradient = downloadCtx.createLinearGradient(0, 0, 600, 900);
+                const colors = gradients[designState.gradient];
+                gradient.addColorStop(0, colors[0]);
+                gradient.addColorStop(1, colors[1]);
+                downloadCtx.fillStyle = gradient;
+                downloadCtx.fillRect(0, 0, 600, 900);
+            } else if (designState.backgroundType === 'image' && designState.backgroundImage) {
+                downloadCtx.drawImage(designState.backgroundImage, 0, 0, 600, 900);
+            }
+            
+            // Draw text
+            const opacity = parseInt(document.getElementById('opacity')?.value || 100) / 100;
+            downloadCtx.globalAlpha = opacity;
+            
+            drawTextOnCanvas(downloadCtx, designState.title, designState.titleFont, designState.titleSize, designState.titleColor, designState.titleY, 'title');
+            if (designState.subtitle) {
+                drawTextOnCanvas(downloadCtx, designState.subtitle, designState.titleFont, Math.floor(designState.titleSize * 0.6), designState.titleColor, designState.titleY + 8, 'subtitle');
+            }
+            drawTextOnCanvas(downloadCtx, designState.author, designState.authorFont, designState.authorSize, designState.authorColor, designState.authorY, 'author');
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = `book-cover-${designState.title.replace(/\s+/g, '-').toLowerCase()}.${format}`;
+            link.href = downloadCanvas.toDataURL(`image/${format}`, 0.95);
+            link.click();
+        }
+
+        // Helper function for drawing text on download canvas
+        function drawTextOnCanvas(ctx, text, font, size, color, yPercent, type) {
+            if (!text) return;
+            
+            const y = (yPercent / 100) * 900;
+            let x = 300;
+            
+            ctx.font = `${size}px ${font}`;
+            ctx.textAlign = designState.textAlign;
+            
+            if (designState.textAlign === 'left') x = 50;
+            if (designState.textAlign === 'right') x = 550;
+            
+            if (designState.effects.includes('shadow')) {
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = designState.effectIntensity;
+                ctx.shadowOffsetX = designState.effectIntensity / 2;
+                ctx.shadowOffsetY = designState.effectIntensity / 2;
+            }
+            
+            if (designState.effects.includes('glow')) {
+                ctx.shadowColor = color;
+                ctx.shadowBlur = designState.effectIntensity * 2;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+            
+            if (designState.effects.includes('gradient') && type === 'title') {
+                const gradient = ctx.createLinearGradient(x - 200, y - size/2, x + 200, y + size/2);
+                gradient.addColorStop(0, color);
+                gradient.addColorStop(0.5, '#ffffff');
+                gradient.addColorStop(1, color);
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = color;
+            }
+            
+            ctx.fillText(text, x, y);
+            
+            if (designState.effects.includes('outline')) {
+                ctx.strokeStyle = getContrastColor(color);
+                ctx.lineWidth = Math.max(1, designState.effectIntensity / 3);
+                ctx.strokeText(text, x, y);
+            }
+            
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+
+        // Preview functionality
+        function previewCover() {
+            const previewWindow = window.open('', '_blank', 'width=700,height=1000');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Book Cover Preview</title>
+                    <style>
+                        body { margin: 0; padding: 20px; background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+                        canvas { border: 2px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+                    </style>
+                </head>
+                <body>
+                    <canvas width="600" height="900"></canvas>
+                    <script>
+                        const canvas = document.querySelector('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        img.onload = () => ctx.drawImage(img, 0, 0);
+                        img.src = '${canvas.toDataURL()}';
+                    </script>
+                </body>
+                </html>
+            `);
+        }
+
+        // Reset design
+        function resetDesign() {
+            if (confirm('Are you sure you want to reset the design? This cannot be undone.')) {
+                designState = {
+                    title: 'Your Book Title',
+                    subtitle: '',
+                    author: 'Author Name',
+                    backgroundType: 'color',
+                    backgroundColor: '#2563eb',
+                    backgroundImage: null,
+                    titleFont: 'Georgia',
+                    titleSize: 48,
+                    titleColor: '#ffffff',
+                    authorFont: 'Arial',
+                    authorSize: 24,
+                    authorColor: '#ffffff',
+                    titleY: 30,
+                    authorY: 85,
+                    textAlign: 'center',
+                    effects: [],
+                    effectIntensity: 5,
+                    gradient: 0
+                };
+                updateUI();
+                renderCanvas();
+                updateAnalytics();
+                saveToHistory();
+            }
+        }
+
+        // History management
+        function saveToHistory() {
+            history = history.slice(0, historyIndex + 1);
+            history.push(JSON.parse(JSON.stringify(designState)));
+            historyIndex = history.length - 1;
+            
+            if (history.length > 50) {
+                history.shift();
+                historyIndex--;
+            }
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                designState = JSON.parse(JSON.stringify(history[historyIndex]));
+                updateUI();
+                renderCanvas();
+                updateAnalytics();
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                designState = JSON.parse(JSON.stringify(history[historyIndex]));
+                updateUI();
+                renderCanvas();
+                updateAnalytics();
+            }
+        }
+
+        // Save and load design
+        function saveDesign() {
+            const designData = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                design: designState
+            };
+            
+            const blob = new Blob([JSON.stringify(designData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `book-cover-design-${Date.now()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadDesign(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.design) {
+                            designState = { ...designState, ...data.design };
+                            updateUI();
+                            renderCanvas();
+                            updateAnalytics();
+                            saveToHistory();
+                        }
+                    } catch (error) {
+                        alert('Invalid design file format.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Auto-optimize design
+        function autoOptimize() {
+            // Optimize text sizes based on content length
+            if (designState.title.length > 20) {
+                designState.titleSize = Math.max(36, designState.titleSize - 8);
+            } else if (designState.title.length < 10) {
+                designState.titleSize = Math.min(60, designState.titleSize + 8);
+            }
+            
+            // Optimize positioning
+            if (designState.subtitle) {
+                designState.titleY = Math.max(25, designState.titleY - 5);
+            }
+            
+            // Add shadow for better readability on light backgrounds
+            const bgColor = designState.backgroundColor;
+            const isLightBg = getBrightness(bgColor) > 128;
+            if (isLightBg && !designState.effects.includes('shadow')) {
+                designState.effects.push('shadow');
+            }
+            
+            updateUI();
+            renderCanvas();
+            updateAnalytics();
+            saveToHistory();
+        }
+
+        // Center elements
+        function centerElements() {
+            designState.textAlign = 'center';
+            designState.titleY = designState.subtitle ? 30 : 35;
+            designState.authorY = 85;
+            
+            updateUI();
+            renderCanvas();
+            saveToHistory();
+        }
+
+        // Analytics and feedback
+        function getBrightness(hexColor) {
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+
+        function getColorContrast(bg, fg) {
+            const bgBrightness = getBrightness(bg);
+            const fgBrightness = getBrightness(fg);
+            const lighter = Math.max(bgBrightness, fgBrightness);
+            const darker = Math.min(bgBrightness, fgBrightness);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function getReadabilityScore() {
+            const titleLength = designState.title.length;
+            const fontSize = designState.titleSize;
+            const hasEffects = designState.effects.length > 0;
+            
+            let score = 100;
+            if (titleLength > 30) score -= 20;
+            if (fontSize < 36) score -= 15;
+            if (!hasEffects && getBrightness(designState.backgroundColor) < 100) score -= 10;
+            
+            return score > 85 ? 'Excellent' : score > 70 ? 'Good' : score > 50 ? 'Fair' : 'Poor';
+        }
+
+        function getFontPairingScore() {
+            const titleFont = designState.titleFont;
+            const authorFont = designState.authorFont;
+            
+            const serifFonts = ['Georgia', 'Times New Roman', 'Garamond'];
+            const sansSerifFonts = ['Arial', 'Helvetica'];
+            
+            const titleIsSerif = serifFonts.includes(titleFont);
+            const authorIsSerif = serifFonts.includes(authorFont);
+            
+            if (titleIsSerif !== authorIsSerif) {
+                return 'Excellent';
+            } else if (titleFont === authorFont) {
+                return 'Good';
+            } else {
+                return 'Fair';
+            }
+        }
+
+        // Enhanced analytics with better visual feedback
+        function updateAnalytics() {
+            const titleLength = designState.title.length;
+            const contrast = getColorContrast(designState.backgroundColor, designState.titleColor);
+            const readability = getReadabilityScore();
+            const fontPairing = getFontPairingScore();
+            
+            // Update with enhanced styling and animations
+            const titleLengthEl = document.getElementById('titleLength');
+            titleLengthEl.textContent = titleLength + ' chars';
+            titleLengthEl.className = 'stat-value ' + (titleLength > 30 ? 'warning' : titleLength < 50 ? 'good' : 'excellent');
+            
+            const contrastEl = document.getElementById('colorContrast');
+            const contrastText = contrast > 4.5 ? 'Excellent' : contrast > 3 ? 'Good' : 'Poor';
+            contrastEl.textContent = contrastText;
+            contrastEl.className = 'stat-value ' + contrastText.toLowerCase();
+            
+            const readabilityEl = document.getElementById('readability');
+            readabilityEl.textContent = readability;
+            readabilityEl.className = 'stat-value ' + readability.toLowerCase().replace(' ', '-');
+            
+            const fontPairingEl = document.getElementById('fontPairing');
+            fontPairingEl.textContent = fontPairing;
+            fontPairingEl.className = 'stat-value ' + fontPairing.toLowerCase();
+        }
+
+        // Initialize the application when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
