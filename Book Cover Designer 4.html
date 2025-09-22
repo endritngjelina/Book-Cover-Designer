@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Cover Designer Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            gap: 20px;
+            min-height: 100vh;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .controls-panel {
+            height: fit-content;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea transparent;
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+            position: relative;
+        }
+
+        .book-cover {
+            width: 400px;
+            height: 600px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            transform: perspective(1000px) rotateY(-5deg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .book-cover:hover {
+            transform: perspective(1000px) rotateY(0deg) scale(1.02);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .cover-background {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .cover-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 30px;
+            z-index: 2;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .book-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            line-height: 1.1;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            transition: all 0.3s ease;
+        }
+
+        .book-subtitle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .book-author {
+            font-size: 1.4em;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .genre-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: white;
+            display: inline-block;
+            margin: 10px auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group h3::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="color"] {
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .template-card {
+            width: 60px;
+            height: 90px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-card:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+
+        .template-card.active {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .features-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .feature-icon {
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .file-input {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-input input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: #5a67d8;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .layer-controls {
+            background: rgba(102, 126, 234, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .layer-item:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 300px 1fr;
+                gap: 15px;
+            }
+            
+            .features-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            
+            .book-cover {
+                width: 300px;
+                height: 450px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Controls Panel -->
+        <div class="panel controls-panel animate-in">
+            <h2 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">Book Cover Designer Pro</h2>
+            
+            <div class="control-group">
+                <h3>📖 Book Details</h3>
+                <input type="text" id="bookTitle" placeholder="Enter book title" value="The Great Adventure">
+                <input type="text" id="bookSubtitle" placeholder="Enter subtitle (optional)" style="margin-top: 8px;">
+                <input type="text" id="bookAuthor" placeholder="Enter author name" value="Jane Doe" style="margin-top: 8px;">
+                <input type="text" id="bookGenre" placeholder="Enter genre" value="Adventure" style="margin-top: 8px;">
+            </div>
+
+            <div class="control-group">
+                <h3>🎨 Background</h3>
+                <select id="backgroundType">
+                    <option value="gradient">Gradient</option>
+                    <option value="solid">Solid Color</option>
+                    <option value="image">Custom Image</option>
+                    <option value="pattern">Pattern</option>
+                </select>
+                <input type="color" id="primaryColor" value="#1e3c72" style="margin-top: 8px;">
+                <input type="color" id="secondaryColor" value="#2a5298" style="margin-top: 8px;">
+                <div class="file-input" style="margin-top: 8px;">
+                    <input type="file" id="backgroundImage" accept="image/*">
+                    <label for="backgroundImage" class="file-input-label">📁 Upload Background Image</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>✏️ Typography</h3>
+                <select id="titleFont">
+                    <option value="serif">Serif</option>
+                    <option value="sans-serif">Sans Serif</option>
+                    <option value="monospace">Monospace</option>
+                    <option value="cursive">Cursive</option>
+                    <option value="fantasy">Fantasy</option>
+                </select>
+                <label>Title Size: <span id="titleSizeValue">40</span>px</label>
+                <input type="range" id="titleSize" min="20" max="80" value="40">
+                <input type="color" id="titleColor" value="#ffffff" style="margin-top: 8px;">
+                <label style="margin-top: 10px;">
+                    <input type="checkbox" id="titleShadow" checked> Text Shadow
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>📐 Layout</h3>
+                <select id="textAlignment">
+                    <option value="center">Center</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+                <label>Title Position: <span id="titlePositionValue">20</span>%</label>
+                <input type="range" id="titlePosition" min="10" max="50" value="20">
+                <label>Author Position: <span id="authorPositionValue">80</span>%</label>
+                <input type="range" id="authorPosition" min="60" max="90" value="80">
+            </div>
+
+            <div class="control-group">
+                <h3>✨ Effects</h3>
+                <label>Overlay Opacity: <span id="overlayOpacityValue">0</span>%</label>
+                <input type="range" id="overlayOpacity" min="0" max="100" value="0">
+                <input type="color" id="overlayColor" value="#000000" style="margin-top: 8px;">
+                <label style="margin-top: 10px;">
+                    <input type="checkbox" id="glowEffect"> Glow Effect
+                </label>
+                <label>
+                    <input type="checkbox" id="vintageEffect"> Vintage Filter
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>📚 Templates</h3>
+                <div class="template-grid">
+                    <div class="template-card active" data-template="modern" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                    <div class="template-card" data-template="classic" style="background: linear-gradient(135deg, #8B4513, #CD853F);"></div>
+                    <div class="template-card" data-template="dark" style="background: linear-gradient(135deg, #2c3e50, #34495e);"></div>
+                    <div class="template-card" data-template="nature" style="background: linear-gradient(135deg, #27ae60, #2ecc71);"></div>
+                    <div class="template-card" data-template="romance" style="background: linear-gradient(135deg, #e74c3c, #f39c12);"></div>
+                    <div class="template-card" data-template="scifi" style="background: linear-gradient(135deg, #3498db, #9b59b6);"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetDesign()">🔄 Reset Design</button>
+            <button class="btn btn-secondary" onclick="randomizeDesign()">🎲 Randomize</button>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="panel canvas-container animate-in">
+            <div class="book-cover" id="bookCover">
+                <div class="cover-background" id="coverBackground"></div>
+                <div class="cover-overlay" id="coverOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); z-index: 1;"></div>
+                <div class="cover-content">
+                    <div class="title-section">
+                        <div class="book-title" id="displayTitle">The Great Adventure</div>
+                        <div class="book-subtitle" id="displaySubtitle"></div>
+                        <div class="genre-badge" id="displayGenre">Adventure</div>
+                    </div>
+                    <div class="book-author" id="displayAuthor">Jane Doe</div>
+                </div>
+            </div>
+            
+            <div class="preview-controls">
+                <button class="zoom-btn" onclick="zoomCover(0.8)">🔍-</button>
+                <button class="zoom-btn" onclick="zoomCover(1.0)">1:1</button>
+                <button class="zoom-btn" onclick="zoomCover(1.2)">🔍+</button>
+            </div>
+
+            <div class="download-section">
+                <h3>📥 Export Your Design</h3>
+                <p>Download your book cover in high quality</p>
+                <button class="btn" onclick="downloadCover('png')">Download PNG</button>
+                <button class="btn" onclick="downloadCover('jpg')">Download JPG</button>
+                <button class="btn" onclick="saveDraft()">💾 Save Draft</button>
+            </div>
+        </div>
+
+        <!-- Features Panel -->
+        <div class="panel features-panel animate-in">
+            <h3>🚀 Pro Features</h3>
+            
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Multiple Templates</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Custom Fonts</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Image Upload</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Advanced Effects</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>High-Quality Export</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Live Preview</span>
+            </div>
+
+            <div class="layer-controls">
+                <h4 style="margin-bottom: 10px;">📑 Layers</h4>
+                <div class="layer-item">
+                    <span>Background</span>
+                    <span>👁️</span>
+                </div>
+                <div class="layer-item">
+                    <span>Title</span>
+                    <span>👁️</span>
+                </div>
+                <div class="layer-item">
+                    <span>Author</span>
+                    <span>👁️</span>
+                </div>
+                <div class="layer-item">
+                    <span>Genre Badge</span>
+                    <span>👁️</span>
+                </div>
+            </div>
+
+            <button class="btn btn-success">🎨 Upgrade to Pro</button>
+            <button class="btn" onclick="showTutorial()">📚 Tutorial</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        const designState = {
+            title: 'The Great Adventure',
+            subtitle: '',
+            author: 'Jane Doe',
+            genre: 'Adventure',
+            backgroundType: 'gradient',
+            primaryColor: '#1e3c72',
+            secondaryColor: '#2a5298',
+            titleFont: 'serif',
+            titleSize: 40,
+            titleColor: '#ffffff',
+            textAlignment: 'center',
+            titlePosition: 20,
+            authorPosition: 80,
+            overlayOpacity: 0,
+            overlayColor: '#000000',
+            titleShadow: true,
+            glowEffect: false,
+            vintageEffect: false
+        };
+
+        // Templates configuration
+        const templates = {
+            modern: {
+                primaryColor: '#667eea',
+                secondaryColor: '#764ba2',
+                titleColor: '#ffffff',
+                titleFont: 'sans-serif'
+            },
+            classic: {
+                primaryColor: '#8B4513',
+                secondaryColor: '#CD853F',
+                titleColor: '#ffffff',
+                titleFont: 'serif'
+            },
+            dark: {
+                primaryColor: '#2c3e50',
+                secondaryColor: '#34495e',
+                titleColor: '#ecf0f1',
+                titleFont: 'sans-serif'
+            },
+            nature: {
+                primaryColor: '#27ae60',
+                secondaryColor: '#2ecc71',
+                titleColor: '#ffffff',
+                titleFont: 'serif'
+            },
+            romance: {
+                primaryColor: '#e74c3c',
+                secondaryColor: '#f39c12',
+                titleColor: '#ffffff',
+                titleFont: 'cursive'
+            },
+            scifi: {
+                primaryColor: '#3498db',
+                secondaryColor: '#9b59b6',
+                titleColor: '#ffffff',
+                titleFont: 'sans-serif'
+            }
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateCover();
+            loadSavedDraft();
+        });
+
+        function setupEventListeners() {
+            // Text inputs
+            document.getElementById('bookTitle').addEventListener('input', (e) => {
+                designState.title = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('bookSubtitle').addEventListener('input', (e) => {
+                designState.subtitle = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('bookAuthor').addEventListener('input', (e) => {
+                designState.author = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('bookGenre').addEventListener('input', (e) => {
+                designState.genre = e.target.value;
+                updateCover();
+            });
+
+            // Color inputs
+            document.getElementById('primaryColor').addEventListener('change', (e) => {
+                designState.primaryColor = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('secondaryColor').addEventListener('change', (e) => {
+                designState.secondaryColor = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('titleColor').addEventListener('change', (e) => {
+                designState.titleColor = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('overlayColor').addEventListener('change', (e) => {
+                designState.overlayColor = e.target.value;
+                updateCover();
+            });
+
+            // Select inputs
+            document.getElementById('backgroundType').addEventListener('change', (e) => {
+                designState.backgroundType = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('titleFont').addEventListener('change', (e) => {
+                designState.titleFont = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('textAlignment').addEventListener('change', (e) => {
+                designState.textAlignment = e.target.value;
+                updateCover();
+            });
+
+            // Range inputs
+            document.getElementById('titleSize').addEventListener('input', (e) => {
+                designState.titleSize = e.target.value;
+                document.getElementById('titleSizeValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('titlePosition').addEventListener('input', (e) => {
+                designState.titlePosition = e.target.value;
+                document.getElementById('titlePositionValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('authorPosition').addEventListener('input', (e) => {
+                designState.authorPosition = e.target.value;
+                document.getElementById('authorPositionValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('overlayOpacity').addEventListener('input', (e) => {
+                designState.overlayOpacity = e.target.value;
+                document.getElementById('overlayOpacityValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            // Checkbox inputs
+            document.getElementById('titleShadow').addEventListener('change', (e) => {
+                designState.titleShadow = e.target.checked;
+                updateCover();
+            });
+
+            document.getElementById('glowEffect').addEventListener('change', (e) => {
+                designState.glowEffect = e.target.checked;
+                updateCover();
+            });
+
+            document.getElementById('vintageEffect').addEventListener('change', (e) => {
+                designState.vintageEffect = e.target.checked;
+                updateCover();
+            });
+
+            // File input
+            document.getElementById('backgroundImage').addEventListener('change', handleImageUpload);
+
+            // Template selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+                    e.target.classList.add('active');
+                    applyTemplate(e.target.dataset.template);
+                });
+            });
+
+            // Auto-save every 30 seconds
+            setInterval(saveDraft, 30000);
+        }
+
+        function updateCover() {
+            const cover = document.getElementById('bookCover');
+            const background = document.getElementById('coverBackground');
+            const overlay = document.getElementById('coverOverlay');
+            const title = document.getElementById('displayTitle');
+            const subtitle = document.getElementById('displaySubtitle');
+            const author = document.getElementById('displayAuthor');
+            const genre = document.getElementById('displayGenre');
+            const titleSection = document.querySelector('.title-section');
+
+            // Update text content
+            title.textContent = designState.title || 'Untitled';
+            subtitle.textContent = designState.subtitle;
+            author.textContent = designState.author || 'Unknown Author';
+            genre.textContent = designState.genre || 'Genre';
+
+            // Update background
+            if (designState.backgroundType === 'gradient') {
+                background.style.background = `linear-gradient(135deg, ${designState.primaryColor}, ${designState.secondaryColor})`;
+            } else if (designState.backgroundType === 'solid') {
+                background.style.background = designState.primaryColor;
+            } else if (designState.backgroundType === 'pattern') {
+                background.style.background = `
+                    radial-gradient(circle at 25% 25%, ${designState.primaryColor}22 2px, transparent 2px),
+                    radial-gradient(circle at 75% 75%, ${designState.secondaryColor}22 2px, transparent 2px),
+                    linear-gradient(135deg, ${designState.primaryColor}, ${designState.secondaryColor})
+                `;
+                background.style.backgroundSize = '20px 20px, 20px 20px, 100% 100%';
+            }
+
+            // Update overlay
+            overlay.style.background = `${designState.overlayColor}${Math.round(designState.overlayOpacity * 2.55).toString(16).padStart(2, '0')}`;
+
+            // Update title styling
+            title.style.fontFamily = designState.titleFont;
+            title.style.fontSize = `${designState.titleSize}px`;
+            title.style.color = designState.titleColor;
+            title.style.textShadow = designState.titleShadow ? '2px 2px 8px rgba(0, 0, 0, 0.7)' : 'none';
+            title.style.textAlign = designState.textAlignment;
+
+            // Update author styling
+            author.style.color = designState.titleColor;
+            author.style.textAlign = designState.textAlignment;
+
+            // Update positioning
+            titleSection.style.marginTop = `${designState.titlePosition}%`;
+            author.style.marginTop = `${designState.authorPosition - 80}%`;
+
+            // Apply effects
+            if (designState.glowEffect) {
+                title.style.textShadow += ', 0 0 20px rgba(255, 255, 255, 0.5)';
+            }
+
+            if (designState.vintageEffect) {
+                cover.style.filter = 'sepia(0.3) contrast(1.2) brightness(0.9)';
+            } else {
+                cover.style.filter = 'none';
+            }
+
+            // Hide subtitle if empty
+            subtitle.style.display = designState.subtitle ? 'block' : 'none';
+        }
+
+        function applyTemplate(templateName) {
+            const template = templates[templateName];
+            if (!template) return;
+
+            // Update design state
+            Object.assign(designState, template);
+
+            // Update UI controls
+            document.getElementById('primaryColor').value = template.primaryColor;
+            document.getElementById('secondaryColor').value = template.secondaryColor;
+            document.getElementById('titleColor').value = template.titleColor;
+            document.getElementById('titleFont').value = template.titleFont;
+
+            updateCover();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const background = document.getElementById('coverBackground');
+                if (designState.backgroundType === 'image') {
+                    background.style.backgroundImage = `url(${e.target.result})`;
+                    background.style.backgroundSize = 'cover';
+                    background.style.backgroundPosition = 'center';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetDesign() {
+            // Reset to default values
+            Object.assign(designState, {
+                title: 'The Great Adventure',
+                subtitle: '',
+                author: 'Jane Doe',
+                genre: 'Adventure',
+                backgroundType: 'gradient',
+                primaryColor: '#1e3c72',
+                secondaryColor: '#2a5298',
+                titleFont: 'serif',
+                titleSize: 40,
+                titleColor: '#ffffff',
+                textAlignment: 'center',
+                titlePosition: 20,
+                authorPosition: 80,
+                overlayOpacity: 0,
+                overlayColor: '#000000',
+                titleShadow: true,
+                glowEffect: false,
+                vintageEffect: false
+            });
+
+            // Update all form controls
+            document.getElementById('bookTitle').value = designState.title;
+            document.getElementById('bookSubtitle').value = designState.subtitle;
+            document.getElementById('bookAuthor').value = designState.author;
+            document.getElementById('bookGenre').value = designState.genre;
+            document.getElementById('backgroundType').value = designState.backgroundType;
+            document.getElementById('primaryColor').value = designState.primaryColor;
+            document.getElementById('secondaryColor').value = designState.secondaryColor;
+            document.getElementById('titleFont').value = designState.titleFont;
+            document.getElementById('titleSize').value = designState.titleSize;
+            document.getElementById('titleColor').value = designState.titleColor;
+            document.getElementById('textAlignment').value = designState.textAlignment;
+            document.getElementById('titlePosition').value = designState.titlePosition;
+            document.getElementById('authorPosition').value = designState.authorPosition;
+            document.getElementById('overlayOpacity').value = designState.overlayOpacity;
+            document.getElementById('overlayColor').value = designState.overlayColor;
+            document.getElementById('titleShadow').checked = designState.titleShadow;
+            document.getElementById('glowEffect').checked = designState.glowEffect;
+            document.getElementById('vintageEffect').checked = designState.vintageEffect;
+
+            // Update range value displays
+            document.getElementById('titleSizeValue').textContent = designState.titleSize;
+            document.getElementById('titlePositionValue').textContent = designState.titlePosition;
+            document.getElementById('authorPositionValue').textContent = designState.authorPosition;
+            document.getElementById('overlayOpacityValue').textContent = designState.overlayOpacity;
+
+            // Reset template selection
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-template="modern"]').classList.add('active');
+
+            updateCover();
+        }
+
+        function randomizeDesign() {
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#34495e', '#e67e22'];
+            const fonts = ['serif', 'sans-serif', 'cursive', 'fantasy'];
+            const genres = ['Mystery', 'Romance', 'Sci-Fi', 'Fantasy', 'Thriller', 'Adventure', 'Drama', 'Comedy'];
+
+            designState.primaryColor = colors[Math.floor(Math.random() * colors.length)];
+            designState.secondaryColor = colors[Math.floor(Math.random() * colors.length)];
+            designState.titleFont = fonts[Math.floor(Math.random() * fonts.length)];
+            designState.titleSize = Math.floor(Math.random() * 40) + 30;
+            designState.genre = genres[Math.floor(Math.random() * genres.length)];
+            designState.titlePosition = Math.floor(Math.random() * 30) + 15;
+            designState.authorPosition = Math.floor(Math.random() * 20) + 70;
+
+            // Update UI controls
+            document.getElementById('primaryColor').value = designState.primaryColor;
+            document.getElementById('secondaryColor').value = designState.secondaryColor;
+            document.getElementById('titleFont').value = designState.titleFont;
+            document.getElementById('titleSize').value = designState.titleSize;
+            document.getElementById('bookGenre').value = designState.genre;
+            document.getElementById('titlePosition').value = designState.titlePosition;
+            document.getElementById('authorPosition').value = designState.authorPosition;
+
+            // Update displays
+            document.getElementById('titleSizeValue').textContent = designState.titleSize;
+            document.getElementById('titlePositionValue').textContent = designState.titlePosition;
+            document.getElementById('authorPositionValue').textContent = designState.authorPosition;
+
+            updateCover();
+        }
+
+        function zoomCover(scale) {
+            const cover = document.getElementById('bookCover');
+            const currentTransform = cover.style.transform || '';
+            const baseTransform = 'perspective(1000px) rotateY(-5deg)';
+            
+            if (scale === 1.0) {
+                cover.style.transform = baseTransform;
+            } else {
+                cover.style.transform = `${baseTransform} scale(${scale})`;
+            }
+        }
+
+        function downloadCover(format) {
+            const cover = document.getElementById('bookCover');
+            
+            // Create a temporary canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800; // High resolution
+            canvas.height = 1200;
+
+            // Create a temporary div with higher resolution
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = cover.outerHTML;
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.transform = 'scale(2)';
+            document.body.appendChild(tempDiv);
+
+            // Use html2canvas library (would need to be included)
+            // For this demo, we'll create a simple download simulation
+            const link = document.createElement('a');
+            
+            // Convert current cover to canvas using DOM-to-image technique
+            html2canvas(cover, {
+                width: 800,
+                height: 1200,
+                scale: 2,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                let dataUrl;
+                if (format === 'png') {
+                    dataUrl = canvas.toDataURL('image/png');
+                } else {
+                    dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                }
+                
+                link.download = `book-cover-${Date.now()}.${format}`;
+                link.href = dataUrl;
+                link.click();
+            }).catch(() => {
+                // Fallback method
+                const dataUrl = generateFallbackImage(format);
+                link.download = `book-cover-${Date.now()}.${format}`;
+                link.href = dataUrl;
+                link.click();
+            });
+
+            document.body.removeChild(tempDiv);
+        }
+
+        function generateFallbackImage(format) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 1200;
+
+            // Draw background
+            if (designState.backgroundType === 'gradient') {
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, designState.primaryColor);
+                gradient.addColorStop(1, designState.secondaryColor);
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = designState.primaryColor;
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw overlay
+            if (designState.overlayOpacity > 0) {
+                ctx.fillStyle = `${designState.overlayColor}${Math.round(designState.overlayOpacity * 2.55).toString(16).padStart(2, '0')}`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Draw text
+            ctx.fillStyle = designState.titleColor;
+            ctx.font = `bold ${designState.titleSize * 2}px ${designState.titleFont}`;
+            ctx.textAlign = designState.textAlignment;
+            
+            const titleX = designState.textAlignment === 'center' ? canvas.width / 2 : 
+                         designState.textAlignment === 'left' ? 60 : canvas.width - 60;
+            
+            // Title
+            ctx.fillText(designState.title, titleX, (designState.titlePosition / 100) * canvas.height + 100);
+            
+            // Author
+            ctx.font = `${28 * 2}px ${designState.titleFont}`;
+            ctx.fillText(designState.author, titleX, (designState.authorPosition / 100) * canvas.height);
+
+            // Genre
+            ctx.font = `${18 * 2}px ${designState.titleFont}`;
+            ctx.fillText(designState.genre, titleX, (designState.titlePosition / 100) * canvas.height + 180);
+
+            return format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        function saveDraft() {
+            const draftData = {
+                designState: designState,
+                timestamp: Date.now()
+            };
+            
+            // Simulate save (in a real app, this would go to a server)
+            const dataStr = JSON.stringify(draftData);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `book-cover-draft-${Date.now()}.json`;
+            link.click();
+            
+            // Visual feedback
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Saved!';
+            btn.style.background = '#00b894';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function loadSavedDraft() {
+            // In a real app, this would load from server or localStorage
+            // For now, just check if there's any saved data in memory
+            const savedData = null; // Placeholder
+            
+            if (savedData) {
+                Object.assign(designState, savedData.designState);
+                updateAllControls();
+                updateCover();
+            }
+        }
+
+        function updateAllControls() {
+            // Update all form controls to match current design state
+            Object.keys(designState).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = designState[key];
+                    } else {
+                        element.value = designState[key];
+                    }
+                }
+            });
+        }
+
+        function showTutorial() {
+            alert(`📚 Book Cover Designer Tutorial
+
+1. 📖 Enter your book details (title, author, genre)
+2. 🎨 Choose background style and colors
+3. ✏️ Customize typography and layout
+4. ✨ Add effects and overlays
+5. 📚 Try different templates for inspiration
+6. 🔍 Use zoom controls to preview
+7. 📥 Download your cover in PNG or JPG format
+
+Pro Tips:
+• Use contrasting colors for better readability
+• Keep titles concise and impactful
+• Consider your genre when choosing styles
+• Save drafts regularly while working
+
+Happy designing! 🎨`);
+        }
+
+        // Add some CSS for the html2canvas fallback
+        function addHtml2CanvasScript() {
+            if (!window.html2canvas) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                document.head.appendChild(script);
+            }
+        }
+
+        // Initialize html2canvas
+        addHtml2CanvasScript();
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveDraft();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        randomizeDesign();
+                        break;
+                    case 'z':
+                        e.preventDefault();
+                        resetDesign();
+                        break;
+                }
+            }
+        });
+
+        // Add smooth scrolling for mobile
+        document.addEventListener('touchstart', function(){}, {passive: true});
+    </script>
+</body>
+</html>
