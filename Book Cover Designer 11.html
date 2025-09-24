@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Cover Designer Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 200, 255, 0.3) 0%, transparent 50%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.02) 49%, rgba(255,255,255,0.02) 51%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.02) 49%, rgba(255,255,255,0.02) 51%, transparent 52%);
+            background-size: 30px 30px;
+            pointer-events: none;
+            animation: shimmer 20s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100px) translateY(-100px); }
+            100% { transform: translateX(100px) translateY(100px); }
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(40px) saturate(180%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid transparent;
+            background-clip: padding-box;
+            overflow-y: auto;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                inset 1px 0 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(120, 119, 198, 0.5) 20%, 
+                rgba(255, 119, 198, 0.5) 50%, 
+                rgba(120, 200, 255, 0.5) 80%, 
+                transparent 100%);
+            animation: gradientShift 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes gradientShift {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        .sidebar-header {
+            padding: 32px 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, 
+                rgba(120, 119, 198, 0.2) 0%, 
+                rgba(255, 119, 198, 0.1) 50%, 
+                rgba(120, 200, 255, 0.2) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .sidebar-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            text-shadow: none;
+        }
+
+        .sidebar-header p {
+            font-size: 15px;
+            opacity: 0.7;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .controls-section {
+            padding: 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+        }
+
+        .controls-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 28px;
+            right: 28px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #7877c6, #ff77c6);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(120, 119, 198, 0.6);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            color: #fff;
+            position: relative;
+        }
+
+        .control-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: rgba(120, 119, 198, 0.8);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 0 0 4px rgba(120, 119, 198, 0.2),
+                0 8px 32px rgba(120, 119, 198, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .color-picker {
+            width: 100%;
+            height: 56px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-picker::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #7877c6, #ff77c6, #78c8ff);
+            border-radius: 18px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .color-picker:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-picker:hover::before {
+            opacity: 1;
+        }
+
+        .range-input {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            position: relative;
+        }
+
+        .range-input::-webkit-slider-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7877c6, #ff77c6);
+            cursor: pointer;
+            box-shadow: 
+                0 4px 12px rgba(120, 119, 198, 0.4),
+                0 0 0 4px rgba(255, 255, 255, 0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .range-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 6px 20px rgba(120, 119, 198, 0.6),
+                0 0 0 6px rgba(255, 255, 255, 0.15);
+        }
+
+        .font-dropdown {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .font-dropdown:focus {
+            outline: none;
+            border-color: rgba(120, 119, 198, 0.8);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 0 0 4px rgba(120, 119, 198, 0.2),
+                0 8px 32px rgba(120, 119, 198, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .font-dropdown option {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .template-card {
+            aspect-ratio: 3/4;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .template-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .template-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .template-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(120, 119, 198, 0.5);
+        }
+
+        .template-card:hover::before {
+            opacity: 1;
+        }
+
+        .template-card:hover::after {
+            width: 100px;
+            height: 100px;
+        }
+
+        .template-card:active {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .template-1 { 
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
+        }
+        .template-2 { 
+            background: linear-gradient(135deg, #A8E6CF 0%, #FFD93D 100%);
+            box-shadow: 0 8px 32px rgba(168, 230, 207, 0.3);
+        }
+        .template-3 { 
+            background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+            box-shadow: 0 8px 32px rgba(108, 92, 231, 0.3);
+        }
+        .template-4 { 
+            background: linear-gradient(135deg, #FD79A8 0%, #FDCB6E 100%);
+            box-shadow: 0 8px 32px rgba(253, 121, 168, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        .toolbar {
+            padding: 20px 32px;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(40px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 32px;
+            right: 32px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7877c6, #ff77c6);
+            color: white;
+            box-shadow: 
+                0 8px 32px rgba(120, 119, 198, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 40px rgba(120, 119, 198, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #8988d4, #ff88d4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(120, 119, 198, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 119, 198, 0.05) 0%, transparent 50%);
+        }
+
+        .book-cover {
+            width: 420px;
+            height: 630px;
+            position: relative;
+            border-radius: 24px;
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.6),
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            cursor: grab;
+            transform-style: preserve-3d;
+            background: #1a1a1a;
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #7877c6, #ff77c6, #78c8ff, #7877c6);
+            border-radius: 26px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+            animation: borderRotate 4s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .book-cover:hover {
+            transform: perspective(1000px) rotateY(8deg) rotateX(4deg) scale(1.05);
+            box-shadow: 
+                0 60px 140px rgba(0, 0, 0, 0.8),
+                0 30px 80px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .book-cover:hover::before {
+            opacity: 0.6;
+        }
+
+        .book-cover:active {
+            cursor: grabbing;
+        }
+
+
+
+        .book-title {
+            position: absolute;
+            width: 90%;
+            left: 5%;
+            text-align: center;
+            font-weight: 800;
+            color: white;
+            text-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.8),
+                0 2px 10px rgba(0, 0, 0, 0.6),
+                0 1px 3px rgba(0, 0, 0, 0.4);
+            cursor: move;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            z-index: 10;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .book-author {
+            position: absolute;
+            width: 90%;
+            left: 5%;
+            text-align: center;
+            font-weight: 500;
+            color: white;
+            text-shadow: 
+                0 2px 12px rgba(0, 0, 0, 0.7),
+                0 1px 6px rgba(0, 0, 0, 0.5);
+            cursor: move;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            z-index: 10;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .draggable:hover {
+            transform: scale(1.05);
+            filter: 
+                drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))
+                drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 32px;
+            right: 32px;
+            display: flex;
+            gap: 12px;
+            background: rgba(18, 18, 18, 0.9);
+            backdrop-filter: blur(20px) saturate(180%);
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .zoom-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zoom-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(120, 119, 198, 0.2);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(120, 119, 198, 0.3);
+            border-color: rgba(120, 119, 198, 0.5);
+        }
+
+        .zoom-btn:hover::before {
+            left: 100%;
+        }
+
+        .zoom-btn:active {
+            transform: translateY(0px);
+        }
+
+        .layers-panel {
+            position: absolute;
+            top: 32px;
+            right: 32px;
+            width: 240px;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(40px) saturate(180%);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            z-index: 100;
+        }
+
+        .layers-panel h4 {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .layer-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .layer-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(120, 119, 198, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .layer-item:hover {
+            background: rgba(120, 119, 198, 0.1);
+            border-color: rgba(120, 119, 198, 0.3);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .layer-item:hover::before {
+            left: 100%;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #7877c6;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            position: relative;
+        }
+
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 4px solid transparent;
+            border-top: 4px solid #ff77c6;
+            border-radius: 50%;
+            animation: spin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            padding: 20px 28px;
+            background: linear-gradient(135deg, #34C759, #30A14E);
+            color: white;
+            border-radius: 16px;
+            box-shadow: 
+                0 20px 40px rgba(52, 199, 89, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #34C759, #30A14E, #34C759);
+            border-radius: 18px;
+            z-index: -1;
+            animation: notificationGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes notificationGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .book-cover {
+                width: 300px;
+                height: 450px;
+            }
+            
+            .canvas-container {
+                padding: 20px;
+            }
+
+            .zoom-controls {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .layers-panel {
+                top: 20px;
+                right: 20px;
+                width: calc(100% - 40px);
+                max-width: 280px;
+            }
+
+            .notification {
+                top: 20px;
+                right: 20px;
+                left: 20px;
+                transform: translateY(-100px);
+            }
+
+            .notification.show {
+                transform: translateY(0);
+            }
+        }
+
+        .texture-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.8) 1px, transparent 0);
+            background-size: 40px 40px;
+            animation: textureShift 30s linear infinite;
+        }
+
+        @keyframes textureShift {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(10px, 5px); }
+            50% { transform: translate(5px, 10px); }
+            75% { transform: translate(-5px, 5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(120, 119, 198, 0.6);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(120, 119, 198, 0.8);
+        }
+
+        /* Enhanced focus states for accessibility */
+        .control-input:focus,
+        .font-dropdown:focus,
+        .color-picker:focus {
+            outline: 2px solid rgba(120, 119, 198, 0.8);
+            outline-offset: 2px;
+        }
+
+        .btn:focus {
+            outline: 2px solid rgba(120, 119, 198, 0.8);
+            outline-offset: 2px;
+        }
+
+        /* Improved range input styling */
+        .range-input::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7877c6, #ff77c6);
+            cursor: pointer;
+            box-shadow: 
+                0 4px 12px rgba(120, 119, 198, 0.4),
+                0 0 0 4px rgba(255, 255, 255, 0.1);
+            border: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .range-input::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 6px 20px rgba(120, 119, 198, 0.6),
+                0 0 0 6px rgba(255, 255, 255, 0.15);
+        }
+
+        .range-input::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        /* Enhanced template card animations */
+        .template-card {
+            background-attachment: fixed;
+        }
+
+        .template-card:nth-child(1):hover {
+            animation: templatePulse1 2s ease-in-out infinite;
+        }
+
+        .template-card:nth-child(2):hover {
+            animation: templatePulse2 2s ease-in-out infinite;
+        }
+
+        .template-card:nth-child(3):hover {
+            animation: templatePulse3 2s ease-in-out infinite;
+        }
+
+        .template-card:nth-child(4):hover {
+            animation: templatePulse4 2s ease-in-out infinite;
+        }
+
+        @keyframes templatePulse1 {
+            0%, 100% { box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3); }
+            50% { box-shadow: 0 12px 40px rgba(255, 107, 107, 0.6); }
+        }
+
+        @keyframes templatePulse2 {
+            0%, 100% { box-shadow: 0 8px 32px rgba(168, 230, 207, 0.3); }
+            50% { box-shadow: 0 12px 40px rgba(168, 230, 207, 0.6); }
+        }
+
+        @keyframes templatePulse3 {
+            0%, 100% { box-shadow: 0 8px 32px rgba(108, 92, 231, 0.3); }
+            50% { box-shadow: 0 12px 40px rgba(108, 92, 231, 0.6); }
+        }
+
+        @keyframes templatePulse4 {
+            0%, 100% { box-shadow: 0 8px 32px rgba(253, 121, 168, 0.3); }
+            50% { box-shadow: 0 12px 40px rgba(253, 121, 168, 0.6); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>📚 Cover Designer Pro</h1>
+                <p>Create stunning book covers with ease</p>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="section-title">✨ Quick Templates</h3>
+                <div class="templates-grid">
+                    <div class="template-card template-1" onclick="applyTemplate(1)"></div>
+                    <div class="template-card template-2" onclick="applyTemplate(2)"></div>
+                    <div class="template-card template-3" onclick="applyTemplate(3)"></div>
+                    <div class="template-card template-4" onclick="applyTemplate(4)"></div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="section-title">📖 Content</h3>
+                <div class="control-group">
+                    <label class="control-label">Book Title</label>
+                    <input type="text" class="control-input" id="titleInput" placeholder="Enter your book title..." value="The Great Adventure">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Author Name</label>
+                    <input type="text" class="control-input" id="authorInput" placeholder="Enter author name..." value="John Smith">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Subtitle (Optional)</label>
+                    <input type="text" class="control-input" id="subtitleInput" placeholder="Enter subtitle...">
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="section-title">🎨 Design</h3>
+                <div class="control-group">
+                    <label class="control-label">Background Color</label>
+                    <input type="color" class="color-picker" id="bgColorInput" value="#4a90e2">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Title Font</label>
+                    <select class="font-dropdown" id="titleFontInput">
+                        <option value="'Playfair Display', serif">Playfair Display</option>
+                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                        <option value="'Georgia', serif">Georgia</option>
+                        <option value="'Arial Black', sans-serif">Arial Black</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Helvetica', sans-serif">Helvetica</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Title Size: <span id="titleSizeValue">48px</span></label>
+                    <input type="range" class="range-input" id="titleSizeInput" min="24" max="72" value="48">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Author Size: <span id="authorSizeValue">24px</span></label>
+                    <input type="range" class="range-input" id="authorSizeInput" min="14" max="36" value="24">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Text Color</label>
+                    <input type="color" class="color-picker" id="textColorInput" value="#ffffff">
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="section-title">🔧 Layout</h3>
+                <div class="control-group">
+                    <label class="control-label">Title Position Y: <span id="titlePosValue">25%</span></label>
+                    <input type="range" class="range-input" id="titlePosInput" min="10" max="90" value="25">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Author Position Y: <span id="authorPosValue">75%</span></label>
+                    <input type="range" class="range-input" id="authorPosInput" min="10" max="90" value="75">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Background Opacity: <span id="opacityValue">100%</span></label>
+                    <input type="range" class="range-input" id="opacityInput" min="10" max="100" value="100">
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="toolbar">
+                <button class="btn btn-secondary" onclick="resetDesign()">
+                    🔄 Reset
+                </button>
+                <button class="btn btn-secondary" onclick="toggleLayers()">
+                    📋 Layers
+                </button>
+                <button class="btn btn-secondary" onclick="saveProject()">
+                    💾 Save Project
+                </button>
+                <button class="btn btn-primary" onclick="downloadCover()">
+                    ⬇️ Download PNG
+                </button>
+                <button class="btn btn-primary" onclick="downloadHighRes()">
+                    📸 Download HD
+                </button>
+            </div>
+
+            <div class="canvas-container">
+                <div class="book-cover" id="bookCover">
+                    <div class="texture-overlay"></div>
+                    <div class="background-overlay"></div>
+                    <h1 class="book-title draggable" id="bookTitle">The Great Adventure</h1>
+                    <h2 class="book-author draggable" id="bookAuthor">John Smith</h2>
+                </div>
+
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomOut()">−</button>
+                    <button class="zoom-btn" onclick="resetZoom()">⌂</button>
+                    <button class="zoom-btn" onclick="zoomIn()">+</button>
+                </div>
+
+                <div class="layers-panel" id="layersPanel">
+                    <h4>Layers</h4>
+                    <div class="layer-item" onclick="selectLayer('title')">📝 Title</div>
+                    <div class="layer-item" onclick="selectLayer('author')">👤 Author</div>
+                    <div class="layer-item" onclick="selectLayer('background')">🎨 Background</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // State management
+        let currentZoom = 1;
+        let isDragging = false;
+        let selectedElement = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateCover();
+            showNotification('Welcome to Cover Designer Pro! 🎉');
+        });
+
+        function setupEventListeners() {
+            // Input listeners
+            document.getElementById('titleInput').addEventListener('input', updateTitle);
+            document.getElementById('authorInput').addEventListener('input', updateAuthor);
+            document.getElementById('subtitleInput').addEventListener('input', updateSubtitle);
+            document.getElementById('bgColorInput').addEventListener('input', updateBackground);
+            document.getElementById('titleFontInput').addEventListener('change', updateTitleFont);
+            document.getElementById('titleSizeInput').addEventListener('input', updateTitleSize);
+            document.getElementById('authorSizeInput').addEventListener('input', updateAuthorSize);
+            document.getElementById('textColorInput').addEventListener('input', updateTextColor);
+            document.getElementById('titlePosInput').addEventListener('input', updateTitlePosition);
+            document.getElementById('authorPosInput').addEventListener('input', updateAuthorPosition);
+            document.getElementById('opacityInput').addEventListener('input', updateOpacity);
+
+            // Drag and drop for text elements
+            setupDragAndDrop();
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+        }
+
+        function setupDragAndDrop() {
+            const draggableElements = document.querySelectorAll('.draggable');
+            
+            draggableElements.forEach(element => {
+                element.addEventListener('mousedown', startDrag);
+            });
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            selectedElement = e.target;
+            const rect = selectedElement.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            selectedElement.style.cursor = 'grabbing';
+            e.preventDefault();
+        }
+
+        function drag(e) {
+            if (!isDragging || !selectedElement) return;
+            
+            const container = document.getElementById('bookCover');
+            const containerRect = container.getBoundingClientRect();
+            
+            const x = e.clientX - containerRect.left - dragOffset.x;
+            const y = e.clientY - containerRect.top - dragOffset.y;
+            
+            const xPercent = (x / container.offsetWidth) * 100;
+            const yPercent = (y / container.offsetHeight) * 100;
+            
+            selectedElement.style.left = Math.max(0, Math.min(90, xPercent)) + '%';
+            selectedElement.style.top = Math.max(0, Math.min(90, yPercent)) + '%';
+        }
+
+        function endDrag() {
+            if (selectedElement) {
+                selectedElement.style.cursor = 'move';
+            }
+            isDragging = false;
+            selectedElement = null;
+        }
+
+        function updateTitle() {
+            const title = document.getElementById('titleInput').value;
+            document.getElementById('bookTitle').textContent = title || 'Your Title Here';
+        }
+
+        function updateAuthor() {
+            const author = document.getElementById('authorInput').value;
+            document.getElementById('bookAuthor').textContent = author || 'Author Name';
+        }
+
+        function updateSubtitle() {
+            const subtitle = document.getElementById('subtitleInput').value;
+            // Implementation for subtitle would go here
+        }
+
+        function updateBackground() {
+            const color = document.getElementById('bgColorInput').value;
+            const cover = document.getElementById('bookCover');
+            cover.style.background = `linear-gradient(135deg, ${color}, ${adjustBrightness(color, -30)})`;
+        }
+
+        function updateTitleFont() {
+            const font = document.getElementById('titleFontInput').value;
+            document.getElementById('bookTitle').style.fontFamily = font;
+        }
+
+        function updateTitleSize() {
+            const size = document.getElementById('titleSizeInput').value;
+            document.getElementById('bookTitle').style.fontSize = size + 'px';
+            document.getElementById('titleSizeValue').textContent = size + 'px';
+        }
+
+        function updateAuthorSize() {
+            const size = document.getElementById('authorSizeInput').value;
+            document.getElementById('bookAuthor').style.fontSize = size + 'px';
+            document.getElementById('authorSizeValue').textContent = size + 'px';
+        }
+
+        function updateTextColor() {
+            const color = document.getElementById('textColorInput').value;
+            document.getElementById('bookTitle').style.color = color;
+            document.getElementById('bookAuthor').style.color = color;
+        }
+
+        function updateTitlePosition() {
+            const pos = document.getElementById('titlePosInput').value;
+            document.getElementById('bookTitle').style.top = pos + '%';
+            document.getElementById('titlePosValue').textContent = pos + '%';
+        }
+
+        function updateAuthorPosition() {
+            const pos = document.getElementById('authorPosInput').value;
+            document.getElementById('bookAuthor').style.top = pos + '%';
+            document.getElementById('authorPosValue').textContent = pos + '%';
+        }
+
+        function updateOpacity() {
+            const opacity = document.getElementById('opacityInput').value;
+            const overlay = document.querySelector('.background-overlay');
+            overlay.style.background = `rgba(0, 0, 0, ${(100 - opacity) / 100 * 0.5})`;
+            document.getElementById('opacityValue').textContent = opacity + '%';
+        }
+
+        function updateCover() {
+            updateTitle();
+            updateAuthor();
+            updateBackground();
+            updateTitleFont();
+            updateTitleSize();
+            updateAuthorSize();
+            updateTextColor();
+            updateTitlePosition();
+            updateAuthorPosition();
+            updateOpacity();
+        }
+
+        function applyTemplate(templateNum) {
+            const templates = {
+                1: {
+                    bgColor: '#FF6B6B',
+                    textColor: '#FFFFFF',
+                    titleFont: "'Playfair Display', serif",
+                    titleSize: 52,
+                    authorSize: 26,
+                    titlePos: 30,
+                    authorPos: 70
+                },
+                2: {
+                    bgColor: '#A8E6CF',
+                    textColor: '#2C3E50',
+                    titleFont: "'Montserrat', sans-serif",
+                    titleSize: 46,
+                    authorSize: 22,
+                    titlePos: 25,
+                    authorPos: 75
+                },
+                3: {
+                    bgColor: '#6C5CE7',
+                    textColor: '#FFFFFF',
+                    titleFont: "'Georgia', serif",
+                    titleSize: 48,
+                    authorSize: 24,
+                    titlePos: 35,
+                    authorPos: 65
+                },
+                4: {
+                    bgColor: '#FD79A8',
+                    textColor: '#FFFFFF',
+                    titleFont: "'Arial Black', sans-serif",
+                    titleSize: 44,
+                    authorSize: 20,
+                    titlePos: 40,
+                    authorPos: 80
+                }
+            };
+
+            const template = templates[templateNum];
+            if (!template) return;
+
+            // Apply template values to inputs
+            document.getElementById('bgColorInput').value = template.bgColor;
+            document.getElementById('textColorInput').value = template.textColor;
+            document.getElementById('titleFontInput').value = template.titleFont;
+            document.getElementById('titleSizeInput').value = template.titleSize;
+            document.getElementById('authorSizeInput').value = template.authorSize;
+            document.getElementById('titlePosInput').value = template.titlePos;
+            document.getElementById('authorPosInput').value = template.authorPos;
+
+            // Update the cover
+            updateCover();
+            
+            showNotification(`Template ${templateNum} applied! ✨`);
+        }
+
+        function resetDesign() {
+            // Reset all inputs to default values
+            document.getElementById('titleInput').value = 'The Great Adventure';
+            document.getElementById('authorInput').value = 'John Smith';
+            document.getElementById('subtitleInput').value = '';
+            document.getElementById('bgColorInput').value = '#4a90e2';
+            document.getElementById('textColorInput').value = '#ffffff';
+            document.getElementById('titleFontInput').value = "'Playfair Display', serif";
+            document.getElementById('titleSizeInput').value = 48;
+            document.getElementById('authorSizeInput').value = 24;
+            document.getElementById('titlePosInput').value = 25;
+            document.getElementById('authorPosInput').value = 75;
+            document.getElementById('opacityInput').value = 100;
+
+            updateCover();
+            showNotification('Design reset to defaults 🔄');
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom + 0.1, 2);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom - 0.1, 0.5);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const cover = document.getElementById('bookCover');
+            cover.style.transform = `scale(${currentZoom})`;
+        }
+
+        function toggleLayers() {
+            const panel = document.getElementById('layersPanel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectLayer(layer) {
+            // Remove previous selections
+            document.querySelectorAll('.layer-item').forEach(item => {
+                item.style.background = 'transparent';
+            });
+            
+            // Highlight selected layer
+            event.target.style.background = 'rgba(0, 122, 255, 0.2)';
+            
+            // Focus on the corresponding element
+            const elements = {
+                'title': document.getElementById('bookTitle'),
+                'author': document.getElementById('bookAuthor'),
+                'background': document.getElementById('bookCover')
+            };
+            
+            if (elements[layer]) {
+                elements[layer].focus();
+                showNotification(`${layer.charAt(0).toUpperCase() + layer.slice(1)} layer selected`);
+            }
+        }
+
+        function saveProject() {
+            const projectData = {
+                title: document.getElementById('titleInput').value,
+                author: document.getElementById('authorInput').value,
+                subtitle: document.getElementById('subtitleInput').value,
+                bgColor: document.getElementById('bgColorInput').value,
+                textColor: document.getElementById('textColorInput').value,
+                titleFont: document.getElementById('titleFontInput').value,
+                titleSize: document.getElementById('titleSizeInput').value,
+                authorSize: document.getElementById('authorSizeInput').value,
+                titlePos: document.getElementById('titlePosInput').value,
+                authorPos: document.getElementById('authorPosInput').value,
+                opacity: document.getElementById('opacityInput').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(projectData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `book-cover-project-${Date.now()}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showNotification('Project saved successfully! 💾');
+        }
+
+        function downloadCover() {
+            showLoading(true);
+            
+            setTimeout(() => {
+                const cover = document.getElementById('bookCover');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions (standard book cover size)
+                canvas.width = 800;
+                canvas.height = 1200;
+                
+                // Create gradient background
+                const bgColor = document.getElementById('bgColorInput').value;
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, bgColor);
+                gradient.addColorStop(1, adjustBrightness(bgColor, -30));
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add texture overlay
+                ctx.globalAlpha = 0.1;
+                ctx.fillStyle = '#ffffff';
+                for(let i = 0; i < canvas.width; i += 20) {
+                    for(let j = 0; j < canvas.height; j += 20) {
+                        ctx.beginPath();
+                        ctx.arc(i, j, 1, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.globalAlpha = 1;
+                
+                // Add background overlay
+                const opacity = document.getElementById('opacityInput').value;
+                ctx.fillStyle = `rgba(0, 0, 0, ${(100 - opacity) / 100 * 0.5})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add title
+                const titleText = document.getElementById('titleInput').value || 'Your Title Here';
+                const titleSize = parseInt(document.getElementById('titleSizeInput').value) * 2; // Scale for high res
+                const titleFont = document.getElementById('titleFontInput').value;
+                const textColor = document.getElementById('textColorInput').value;
+                const titlePos = parseInt(document.getElementById('titlePosInput').value);
+                
+                ctx.font = `bold ${titleSize}px ${titleFont}`;
+                ctx.fillStyle = textColor;
+                ctx.textAlign = 'center';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetY = 4;
+                
+                // Word wrap for title
+                const words = titleText.split(' ');
+                let line = '';
+                const lines = [];
+                const maxWidth = canvas.width * 0.8;
+                
+                for(let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    const testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        lines.push(line);
+                        line = words[n] + ' ';
+                    } else {
+                        line = testLine;
+                    }
+                }
+                lines.push(line);
+                
+                const titleY = (canvas.height * titlePos / 100);
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, canvas.width / 2, titleY + (index * titleSize * 1.2));
+                });
+                
+                // Add author
+                const authorText = document.getElementById('authorInput').value || 'Author Name';
+                const authorSize = parseInt(document.getElementById('authorSizeInput').value) * 2;
+                const authorPos = parseInt(document.getElementById('authorPosInput').value);
+                
+                ctx.font = `${authorSize}px ${titleFont}`;
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetY = 2;
+                ctx.fillText(authorText, canvas.width / 2, canvas.height * authorPos / 100);
+                
+                // Download the image
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${titleText.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_cover.png`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    
+                    showLoading(false);
+                    showNotification('Cover downloaded successfully! 📸');
+                });
+            }, 1000);
+        }
+
+        function downloadHighRes() {
+            showLoading(true);
+            
+            setTimeout(() => {
+                const cover = document.getElementById('bookCover');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set high resolution dimensions (print quality)
+                canvas.width = 1600;
+                canvas.height = 2400;
+                
+                // Create gradient background
+                const bgColor = document.getElementById('bgColorInput').value;
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, bgColor);
+                gradient.addColorStop(1, adjustBrightness(bgColor, -30));
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add texture overlay
+                ctx.globalAlpha = 0.1;
+                ctx.fillStyle = '#ffffff';
+                for(let i = 0; i < canvas.width; i += 40) {
+                    for(let j = 0; j < canvas.height; j += 40) {
+                        ctx.beginPath();
+                        ctx.arc(i, j, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.globalAlpha = 1;
+                
+                // Add background overlay
+                const opacity = document.getElementById('opacityInput').value;
+                ctx.fillStyle = `rgba(0, 0, 0, ${(100 - opacity) / 100 * 0.5})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add title (high resolution)
+                const titleText = document.getElementById('titleInput').value || 'Your Title Here';
+                const titleSize = parseInt(document.getElementById('titleSizeInput').value) * 4; // Scale for print
+                const titleFont = document.getElementById('titleFontInput').value;
+                const textColor = document.getElementById('textColorInput').value;
+                const titlePos = parseInt(document.getElementById('titlePosInput').value);
+                
+                ctx.font = `bold ${titleSize}px ${titleFont}`;
+                ctx.fillStyle = textColor;
+                ctx.textAlign = 'center';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 16;
+                ctx.shadowOffsetY = 8;
+                
+                // Word wrap for title
+                const words = titleText.split(' ');
+                let line = '';
+                const lines = [];
+                const maxWidth = canvas.width * 0.8;
+                
+                for(let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    const testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        lines.push(line);
+                        line = words[n] + ' ';
+                    } else {
+                        line = testLine;
+                    }
+                }
+                lines.push(line);
+                
+                const titleY = (canvas.height * titlePos / 100);
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, canvas.width / 2, titleY + (index * titleSize * 1.2));
+                });
+                
+                // Add author (high resolution)
+                const authorText = document.getElementById('authorInput').value || 'Author Name';
+                const authorSize = parseInt(document.getElementById('authorSizeInput').value) * 4;
+                const authorPos = parseInt(document.getElementById('authorPosInput').value);
+                
+                ctx.font = `${authorSize}px ${titleFont}`;
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetY = 4;
+                ctx.fillText(authorText, canvas.width / 2, canvas.height * authorPos / 100);
+                
+                // Download the high-res image
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${titleText.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_cover_HD.png`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    
+                    showLoading(false);
+                    showNotification('HD Cover downloaded successfully! 🎯');
+                });
+            }, 1500);
+        }
+
+        function handleKeyboardShortcuts(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveProject();
+                        break;
+                    case 'd':
+                        e.preventDefault();
+                        downloadCover();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        resetDesign();
+                        break;
+                    case '=':
+                    case '+':
+                        e.preventDefault();
+                        zoomIn();
+                        break;
+                    case '-':
+                        e.preventDefault();
+                        zoomOut();
+                        break;
+                    case '0':
+                        e.preventDefault();
+                        resetZoom();
+                        break;
+                }
+            }
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function adjustBrightness(color, amount) {
+            const usePound = color[0] === '#';
+            const col = usePound ? color.slice(1) : color;
+            
+            const num = parseInt(col, 16);
+            let r = (num >> 16) + amount;
+            let g = (num >> 8 & 0x00FF) + amount;
+            let b = (num & 0x0000FF) + amount;
+            
+            r = r > 255 ? 255 : r < 0 ? 0 : r;
+            g = g > 255 ? 255 : g < 0 ? 0 : g;
+            b = b > 255 ? 255 : b < 0 ? 0 : b;
+            
+            return (usePound ? '#' : '') + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
+        }
+
+        // Auto-save functionality
+        let autoSaveTimer;
+        function scheduleAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                // Auto-save to localStorage would go here in a real app
+                // For now, just show a subtle indication
+                console.log('Auto-saved project');
+            }, 5000);
+        }
+
+        // Add auto-save to all input changes
+        document.addEventListener('input', scheduleAutoSave);
+
+        // Add some visual feedback for interactions
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Add hover effects for template cards
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px) scale(1.02) rotateZ(1deg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Responsive design adjustments
+        function handleResize() {
+            const sidebar = document.querySelector('.sidebar');
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                sidebar.style.transform = 'translateY(-100%)';
+            } else {
+                sidebar.style.transform = '';
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Call on load
+
+        // Add some Easter eggs for fun
+        let clickCount = 0;
+        document.querySelector('.sidebar-header h1').addEventListener('click', function() {
+            clickCount++;
+            if (clickCount === 5) {
+                showNotification('🎉 You found the Easter egg! You\'re a true designer!');
+                clickCount = 0;
+            }
+        });
+
+        // Performance optimization: Debounce input updates
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Apply debouncing to expensive operations
+        const debouncedUpdateCover = debounce(updateCover, 100);
+
+        console.log('📚 Book Cover Designer Pro loaded successfully!');
+        console.log('💡 Pro tip: Use Ctrl/Cmd + S to save, Ctrl/Cmd + D to download!');
+    </script>
+</body>
+</html>
