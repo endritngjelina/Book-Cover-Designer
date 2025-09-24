@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Cover Designer Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --darker: #0a0a0f;
+            --light: #f1f5f9;
+            --gray: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.8);
+            --glass-light: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
+        }
+
+        .app-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 360px 1fr 360px;
+            gap: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Glass panel styling */
+        .panel {
+            background: var(--glass);
+            backdrop-filter: blur(24px) saturate(180%);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 1px 0 rgba(255, 255, 255, 0.1) inset,
+                0 -1px 0 rgba(0, 0, 0, 0.2) inset;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .panel:hover::before {
+            opacity: 1;
+        }
+
+        .panel:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 8px 32px rgba(99, 102, 241, 0.2),
+                0 1px 0 rgba(255, 255, 255, 0.15) inset;
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Controls panel */
+        .controls-panel {
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(99, 102, 241, 0.5) transparent;
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .controls-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #7c3aed, #a855f7);
+        }
+
+        /* Canvas area */
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 700px;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        }
+
+        .book-cover-wrapper {
+            perspective: 1200px;
+            margin: 2rem 0;
+        }
+
+        .book-cover {
+            width: 420px;
+            height: 630px;
+            position: relative;
+            box-shadow: 
+                0 40px 120px rgba(0, 0, 0, 0.6),
+                0 20px 60px rgba(99, 102, 241, 0.2),
+                0 8px 32px rgba(0, 0, 0, 0.8);
+            border-radius: 16px;
+            overflow: hidden;
+            transform: rotateY(-8deg) rotateX(2deg);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, transparent 30%, transparent 70%, rgba(255, 255, 255, 0.05) 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.3));
+            z-index: 11;
+        }
+
+        .book-cover:hover {
+            transform: rotateY(0deg) rotateX(0deg) scale(1.05);
+            box-shadow: 
+                0 60px 180px rgba(0, 0, 0, 0.8),
+                0 30px 90px rgba(99, 102, 241, 0.4),
+                0 12px 48px rgba(0, 0, 0, 0.9);
+        }
+
+        .cover-background {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-size: cover;
+            background-position: center;
+            transition: all 0.4s ease;
+        }
+
+        .cover-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            z-index: 5;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-top: 80px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.1); }
+            100% { text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 255, 255, 0.2); }
+        }
+
+        .book-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            word-wrap: break-word;
+            transition: all 0.4s ease;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .book-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .book-author {
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .genre-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 0.75rem 1.25rem;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            color: white;
+            display: inline-block;
+            margin: 0.75rem auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Control groups */
+        .control-group {
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .control-group:nth-child(1) { animation-delay: 0.1s; }
+        .control-group:nth-child(2) { animation-delay: 0.2s; }
+        .control-group:nth-child(3) { animation-delay: 0.3s; }
+        .control-group:nth-child(4) { animation-delay: 0.4s; }
+        .control-group:nth-child(5) { animation-delay: 0.5s; }
+        .control-group:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel-title {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            text-align: center;
+        }
+
+        .panel-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .control-group h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .control-group h3::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Input styling */
+        input, select, textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(17, 17, 27, 0.6);
+            color: #ffffff;
+            backdrop-filter: blur(12px);
+            font-weight: 500;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.2),
+                0 8px 32px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+            background: rgba(17, 17, 27, 0.8);
+        }
+
+        input[type="color"] {
+            height: 60px;
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            padding: 8px;
+            background: rgba(17, 17, 27, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        input[type="color"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            position: relative;
+            margin-top: 0.5rem;
+        }
+
+        input[type="range"]::-webkit-slider-track {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 16px rgba(99, 102, 241, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 6px 24px rgba(99, 102, 241, 0.6),
+                0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 
+                0 4px 16px rgba(99, 102, 241, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Button styling */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 1.75rem;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 16px 48px rgba(99, 102, 241, 0.4),
+                0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            box-shadow: 0 8px 32px rgba(20, 184, 166, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 
+                0 16px 48px rgba(20, 184, 166, 0.4),
+                0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 
+                0 16px 48px rgba(16, 185, 129, 0.4),
+                0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Template grid */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .template-card {
+            width: 100%;
+            height: 90px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .template-card:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .template-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .template-card.active::after {
+            content: '✓';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Features panel */
+        .features-panel h3 {
+            color: #ffffff;
+            margin-bottom: 1.25rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: var(--radius-lg);
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .feature-item:hover {
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateX(8px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            position: relative;
+        }
+
+        .feature-icon::after {
+            content: '✨';
+            font-size: 12px;
+        }
+
+        /* Download section */
+        .download-section {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+            padding: 1.75rem;
+            border-radius: var(--radius-xl);
+            margin-top: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 48px rgba(16, 185, 129, 0.3);
+        }
+
+        .download-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .download-section h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .download-section p {
+            opacity: 0.9;
+            margin-bottom: 1.25rem;
+            font-weight: 500;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn-download {
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        /* Preview controls */
+        .preview-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .zoom-btn {
+            background: rgba(17, 17, 27, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #ffffff;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Layer controls */
+        .layer-controls {
+            background: rgba(99, 102, 241, 0.08);
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            margin: 1.25rem 0;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+        }
+
+        .layer-controls h4 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.95rem;
+        }
+
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(17, 17, 27, 0.6);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .layer-item:hover {
+            transform: translateX(6px) scale(1.02);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .layer-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Premium effects */
+        .premium-glow {
+            position: relative;
+        }
+
+        .premium-glow::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            border-radius: inherit;
+            z-index: -1;
+            animation: rotate 4s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Holographic effect */
+        .holographic {
+            background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+            background-size: 400% 400%;
+            animation: hologram 3s ease-in-out infinite;
+        }
+
+        @keyframes hologram {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* History controls */
+        .history-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .history-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(17, 17, 27, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .history-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1400px) {
+            .app-container {
+                grid-template-columns: 320px 1fr;
+            }
+            
+            .features-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1.25rem;
+            }
+            
+            .book-cover {
+                width: 320px;
+                height: 480px;
+            }
+
+            .panel {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .book-cover {
+                width: 280px;
+                height: 420px;
+            }
+            
+            .controls-panel {
+                max-height: none;
+            }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--dark);
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-xl);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-xl);
+            cursor: pointer;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Controls Panel -->
+        <div class="panel controls-panel animate-in">
+            <h2 class="panel-title">Book Cover Designer Pro</h2>
+            
+            <div class="control-group">
+                <h3><i class="fas fa-book"></i> Book Details</h3>
+                <input type="text" id="bookTitle" placeholder="Enter book title" value="The Great Adventure">
+                <input type="text" id="bookSubtitle" placeholder="Enter subtitle (optional)" style="margin-top: 8px;">
+                <input type="text" id="bookAuthor" placeholder="Enter author name" value="Jane Doe" style="margin-top: 8px;">
+                <input type="text" id="bookGenre" placeholder="Enter genre" value="Adventure" style="margin-top: 8px;">
+            </div>
+
+            <div class="control-group">
+                <h3><i class="fas fa-palette"></i> Background</h3>
+                <select id="backgroundType">
+                    <option value="gradient">Gradient</option>
+                    <option value="solid">Solid Color</option>
+                    <option value="image">Custom Image</option>
+                    <option value="pattern">Pattern</option>
+                </select>
+                <input type="color" id="primaryColor" value="#1e3c72" style="margin-top: 8px;">
+                <input type="color" id="secondaryColor" value="#2a5298" style="margin-top: 8px;">
+                <div class="file-input" style="margin-top: 8px;">
+                    <input type="file" id="backgroundImage" accept="image/*">
+                    <label for="backgroundImage" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Background Image
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3><i class="fas fa-font"></i> Typography</h3>
+                <select id="titleFont">
+                    <option value="Georgia, serif">Serif</option>
+                    <option value="'Segoe UI', sans-serif">Sans Serif</option>
+                    <option value="'Courier New', monospace">Monospace</option>
+                    <option value="'Brush Script MT', cursive">Cursive</option>
+                    <option value="Impact, fantasy">Fantasy</option>
+                </select>
+                <label>Title Size: <span id="titleSizeValue">40</span>px</label>
+                <input type="range" id="titleSize" min="20" max="80" value="40">
+                <input type="color" id="titleColor" value="#ffffff" style="margin-top: 8px;">
+                <label style="margin-top: 10px;">
+                    <input type="checkbox" id="titleShadow" checked> Text Shadow
+                </label>
+                <label>Letter Spacing: <span id="letterSpacingValue">0</span>px</label>
+                <input type="range" id="letterSpacing" min="-2" max="10" value="0">
+            </div>
+
+            <div class="control-group">
+                <h3><i class="fas fa-layer-group"></i> Layout</h3>
+                <select id="textAlignment">
+                    <option value="center">Center</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+                <label>Title Position: <span id="titlePositionValue">20</span>%</label>
+                <input type="range" id="titlePosition" min="10" max="50" value="20">
+                <label>Author Position: <span id="authorPositionValue">80</span>%</label>
+                <input type="range" id="authorPosition" min="60" max="90" value="80">
+            </div>
+
+            <div class="control-group">
+                <h3><i class="fas fa-magic"></i> Effects</h3>
+                <label>Overlay Opacity: <span id="overlayOpacityValue">0</span>%</label>
+                <input type="range" id="overlayOpacity" min="0" max="100" value="0">
+                <input type="color" id="overlayColor" value="#000000" style="margin-top: 8px;">
+                <label style="margin-top: 10px;">
+                    <input type="checkbox" id="glowEffect"> Glow Effect
+                </label>
+                <label>
+                    <input type="checkbox" id="vintageEffect"> Vintage Filter
+                </label>
+                <label>
+                    <input type="checkbox" id="textureEffect"> Paper Texture
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3><i class="fas fa-th-large"></i> Templates</h3>
+                <div class="template-grid">
+                    <div class="template-card active" data-template="modern" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                    <div class="template-card" data-template="classic" style="background: linear-gradient(135deg, #8B4513, #CD853F);"></div>
+                    <div class="template-card" data-template="dark" style="background: linear-gradient(135deg, #2c3e50, #34495e);"></div>
+                    <div class="template-card" data-template="nature" style="background: linear-gradient(135deg, #27ae60, #2ecc71);"></div>
+                    <div class="template-card" data-template="romance" style="background: linear-gradient(135deg, #e74c3c, #f39c12);"></div>
+                    <div class="template-card" data-template="scifi" style="background: linear-gradient(135deg, #3498db, #9b59b6);"></div>
+                </div>
+            </div>
+
+            <div class="history-controls">
+                <button class="history-btn" id="undoBtn" title="Undo"><i class="fas fa-undo"></i></button>
+                <button class="history-btn" id="redoBtn" title="Redo"><i class="fas fa-redo"></i></button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetDesign()">
+                <i class="fas fa-sync"></i> Reset Design
+            </button>
+            <button class="btn btn-secondary" onclick="randomizeDesign()">
+                <i class="fas fa-dice"></i> Randomize
+            </button>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="panel canvas-container animate-in">
+            <div class="book-cover-wrapper">
+                <div class="book-cover" id="bookCover">
+                    <div class="cover-background" id="coverBackground"></div>
+                    <div class="cover-overlay" id="coverOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); z-index: 1;"></div>
+                    <div class="cover-texture" id="coverTexture" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 2; mix-blend-mode: multiply; opacity: 0;"></div>
+                    <div class="cover-content">
+                        <div class="title-section">
+                            <div class="book-title" id="displayTitle">The Great Adventure</div>
+                            <div class="book-subtitle" id="displaySubtitle"></div>
+                            <div class="genre-badge" id="displayGenre">Adventure</div>
+                        </div>
+                        <div class="book-author" id="displayAuthor">Jane Doe</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-controls">
+                <button class="zoom-btn" onclick="zoomCover(0.8)"><i class="fas fa-search-minus"></i> Zoom Out</button>
+                <button class="zoom-btn" onclick="zoomCover(1.0)"><i class="fas fa-expand-arrows-alt"></i> Reset Zoom</button>
+                <button class="zoom-btn" onclick="zoomCover(1.2)"><i class="fas fa-search-plus"></i> Zoom In</button>
+            </div>
+
+            <div class="download-section">
+                <h3><i class="fas fa-download"></i> Export Your Design</h3>
+                <p>Download your book cover in high quality</p>
+                <div class="btn-group">
+                    <button class="btn btn-download" onclick="downloadCover('png')">
+                        <i class="fas fa-file-image"></i> PNG
+                    </button>
+                    <button class="btn btn-download" onclick="downloadCover('jpg')">
+                        <i class="fas fa-file-image"></i> JPG
+                    </button>
+                    <button class="btn btn-download" onclick="downloadCover('svg')">
+                        <i class="fas fa-file-code"></i> SVG
+                    </button>
+                    <button class="btn btn-download" onclick="saveDraft()">
+                        <i class="fas fa-save"></i> Save Draft
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Panel -->
+        <div class="panel features-panel animate-in">
+            <h3><i class="fas fa-rocket"></i> Pro Features</h3>
+            
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>AI-Powered Design Suggestions</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>1000+ Custom Fonts</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Stock Photo Library</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>3D Book Mockups</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Export Print-Ready PDF</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"></div>
+                <span>Collaboration Tools</span>
+            </div>
+
+            <div class="layer-controls">
+                <h4><i class="fas fa-layer-group"></i> Layers</h4>
+                <div class="layer-item">
+                    <span>Background</span>
+                    <span><i class="fas fa-eye"></i></span>
+                </div>
+                <div class="layer-item">
+                    <span>Title</span>
+                    <span><i class="fas fa-eye"></i></span>
+                </div>
+                <div class="layer-item">
+                    <span>Author</span>
+                    <span><i class="fas fa-eye"></i></span>
+                </div>
+                <div class="layer-item">
+                    <span>Genre Badge</span>
+                    <span><i class="fas fa-eye"></i></span>
+                </div>
+                <div class="layer-item">
+                    <span>Texture Overlay</span>
+                    <span><i class="fas fa-eye-slash"></i></span>
+                </div>
+            </div>
+
+            <button class="btn btn-success premium-glow">
+                <i class="fas fa-crown"></i> Upgrade to Pro
+            </button>
+            <button class="btn" onclick="showTutorial()">
+                <i class="fas fa-graduation-cap"></i> Tutorial
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="showTutorial()">
+        <i class="fas fa-question"></i>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Design saved successfully!</span>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Enhanced design state with history
+        const designState = {
+            title: 'The Great Adventure',
+            subtitle: '',
+            author: 'Jane Doe',
+            genre: 'Adventure',
+            backgroundType: 'gradient',
+            primaryColor: '#1e3c72',
+            secondaryColor: '#2a5298',
+            titleFont: 'Georgia, serif',
+            titleSize: 40,
+            titleColor: '#ffffff',
+            textAlignment: 'center',
+            titlePosition: 20,
+            authorPosition: 80,
+            overlayOpacity: 0,
+            overlayColor: '#000000',
+            titleShadow: true,
+            glowEffect: false,
+            vintageEffect: false,
+            textureEffect: false,
+            letterSpacing: 0
+        };
+
+        // History management
+        const designHistory = [JSON.stringify(designState)];
+        let currentHistoryIndex = 0;
+
+        // Templates configuration
+        const templates = {
+            modern: {
+                primaryColor: '#667eea',
+                secondaryColor: '#764ba2',
+                titleColor: '#ffffff',
+                titleFont: "'Segoe UI', sans-serif"
+            },
+            classic: {
+                primaryColor: '#8B4513',
+                secondaryColor: '#CD853F',
+                titleColor: '#ffffff',
+                titleFont: 'Georgia, serif'
+            },
+            dark: {
+                primaryColor: '#2c3e50',
+                secondaryColor: '#34495e',
+                titleColor: '#ecf0f1',
+                titleFont: "'Segoe UI', sans-serif"
+            },
+            nature: {
+                primaryColor: '#27ae60',
+                secondaryColor: '#2ecc71',
+                titleColor: '#ffffff',
+                titleFont: 'Georgia, serif'
+            },
+            romance: {
+                primaryColor: '#e74c3c',
+                secondaryColor: '#f39c12',
+                titleColor: '#ffffff',
+                titleFont: "'Brush Script MT', cursive"
+            },
+            scifi: {
+                primaryColor: '#3498db',
+                secondaryColor: '#9b59b6',
+                titleColor: '#ffffff',
+                titleFont: "'Segoe UI', sans-serif"
+            }
+        };
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateCover();
+            loadSavedDraft();
+            setupTexture();
+        });
+
+        function setupEventListeners() {
+            // Text inputs
+            document.getElementById('bookTitle').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.title = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('bookSubtitle').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.subtitle = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('bookAuthor').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.author = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('bookGenre').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.genre = e.target.value;
+                updateCover();
+            });
+
+            // Color inputs
+            document.getElementById('primaryColor').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.primaryColor = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('secondaryColor').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.secondaryColor = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('titleColor').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.titleColor = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('overlayColor').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.overlayColor = e.target.value;
+                updateCover();
+            });
+
+            // Select inputs
+            document.getElementById('backgroundType').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.backgroundType = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('titleFont').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.titleFont = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('textAlignment').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.textAlignment = e.target.value;
+                updateCover();
+            });
+
+            // Range inputs
+            document.getElementById('titleSize').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.titleSize = e.target.value;
+                document.getElementById('titleSizeValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('titlePosition').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.titlePosition = e.target.value;
+                document.getElementById('titlePositionValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('authorPosition').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.authorPosition = e.target.value;
+                document.getElementById('authorPositionValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('overlayOpacity').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.overlayOpacity = e.target.value;
+                document.getElementById('overlayOpacityValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            document.getElementById('letterSpacing').addEventListener('input', (e) => {
+                saveStateToHistory();
+                designState.letterSpacing = e.target.value;
+                document.getElementById('letterSpacingValue').textContent = e.target.value;
+                updateCover();
+            });
+
+            // Checkbox inputs
+            document.getElementById('titleShadow').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.titleShadow = e.target.checked;
+                updateCover();
+            });
+
+            document.getElementById('glowEffect').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.glowEffect = e.target.checked;
+                updateCover();
+            });
+
+            document.getElementById('vintageEffect').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.vintageEffect = e.target.checked;
+                updateCover();
+            });
+
+            document.getElementById('textureEffect').addEventListener('change', (e) => {
+                saveStateToHistory();
+                designState.textureEffect = e.target.checked;
+                updateCover();
+            });
+
+            // File input
+            document.getElementById('backgroundImage').addEventListener('change', handleImageUpload);
+
+            // Template selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    saveStateToHistory();
+                    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+                    e.target.classList.add('active');
+                    applyTemplate(e.target.dataset.template);
+                });
+            });
+
+            // History buttons
+            document.getElementById('undoBtn').addEventListener('click', undo);
+            document.getElementById('redoBtn').addEventListener('click', redo);
+
+            // Auto-save every 30 seconds
+            setInterval(saveDraft, 30000);
+        }
+
+        function saveStateToHistory() {
+            // Remove future history if we're not at the end
+            if (currentHistoryIndex < designHistory.length - 1) {
+                designHistory.splice(currentHistoryIndex + 1);
+            }
+            
+            // Add new state
+            designHistory.push(JSON.stringify(designState));
+            currentHistoryIndex = designHistory.length - 1;
+            
+            // Update button states
+            updateHistoryButtons();
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById('undoBtn').disabled = currentHistoryIndex <= 0;
+            document.getElementById('redoBtn').disabled = currentHistoryIndex >= designHistory.length - 1;
+        }
+
+        function undo() {
+            if (currentHistoryIndex > 0) {
+                currentHistoryIndex--;
+                Object.assign(designState, JSON.parse(designHistory[currentHistoryIndex]));
+                updateAllControls();
+                updateCover();
+                updateHistoryButtons();
+                showToast('Undo successful!', 'success');
+            }
+        }
+
+        function redo() {
+            if (currentHistoryIndex < designHistory.length - 1) {
+                currentHistoryIndex++;
+                Object.assign(designState, JSON.parse(designHistory[currentHistoryIndex]));
+                updateAllControls();
+                updateCover();
+                updateHistoryButtons();
+                showToast('Redo successful!', 'success');
+            }
+        }
+
+        function setupTexture() {
+            const textureCanvas = document.createElement('canvas');
+            textureCanvas.width = 600;
+            textureCanvas.height = 900;
+            const ctx = textureCanvas.getContext('2d');
+            
+            // Create paper texture
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+            
+            for (let i = 0; i < 2000; i++) {
+                const x = Math.random() * textureCanvas.width;
+                const y = Math.random() * textureCanvas.height;
+                const size = Math.random() * 2;
+                const opacity = Math.random() * 0.1;
+                
+                ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+                ctx.fillRect(x, y, size, size);
+            }
+            
+            // Apply as background
+            document.getElementById('coverTexture').style.backgroundImage = `url(${textureCanvas.toDataURL()})`;
+        }
+
+        function updateCover() {
+            const cover = document.getElementById('bookCover');
+            const background = document.getElementById('coverBackground');
+            const overlay = document.getElementById('coverOverlay');
+            const texture = document.getElementById('coverTexture');
+            const title = document.getElementById('displayTitle');
+            const subtitle = document.getElementById('displaySubtitle');
+            const author = document.getElementById('displayAuthor');
+            const genre = document.getElementById('displayGenre');
+            const titleSection = document.querySelector('.title-section');
+
+            // Update text content
+            title.textContent = designState.title || 'Untitled';
+            subtitle.textContent = designState.subtitle;
+            author.textContent = designState.author || 'Unknown Author';
+            genre.textContent = designState.genre || 'Genre';
+
+            // Update background
+            if (designState.backgroundType === 'gradient') {
+                background.style.background = `linear-gradient(135deg, ${designState.primaryColor}, ${designState.secondaryColor})`;
+            } else if (designState.backgroundType === 'solid') {
+                background.style.background = designState.primaryColor;
+            } else if (designState.backgroundType === 'pattern') {
+                background.style.background = `
+                    radial-gradient(circle at 25% 25%, ${designState.primaryColor}22 2px, transparent 2px),
+                    radial-gradient(circle at 75% 75%, ${designState.secondaryColor}22 2px, transparent 2px),
+                    linear-gradient(135deg, ${designState.primaryColor}, ${designState.secondaryColor})
+                `;
+                background.style.backgroundSize = '20px 20px, 20px 20px, 100% 100%';
+            }
+
+            // Update overlay
+            const opacityHex = Math.round(designState.overlayOpacity * 2.55).toString(16).padStart(2, '0');
+            overlay.style.background = `${designState.overlayColor}${opacityHex}`;
+
+            // Update texture
+            texture.style.opacity = designState.textureEffect ? 0.3 : 0;
+
+            // Update title styling
+            title.style.fontFamily = designState.titleFont;
+            title.style.fontSize = `${designState.titleSize}px`;
+            title.style.color = designState.titleColor;
+            title.style.textShadow = designState.titleShadow ? '2px 2px 8px rgba(0, 0, 0, 0.7)' : 'none';
+            title.style.textAlign = designState.textAlignment;
+            title.style.letterSpacing = `${designState.letterSpacing}px`;
+
+            // Update author styling
+            author.style.color = designState.titleColor;
+            author.style.textAlign = designState.textAlignment;
+
+            // Update positioning
+            titleSection.style.marginTop = `${designState.titlePosition}%`;
+            author.style.marginTop = `${designState.authorPosition - 80}%`;
+
+            // Apply effects
+            if (designState.glowEffect) {
+                title.style.textShadow += ', 0 0 20px rgba(255, 255, 255, 0.5)';
+            }
+
+            if (designState.vintageEffect) {
+                cover.style.filter = 'sepia(0.3) contrast(1.2) brightness(0.9)';
+            } else {
+                cover.style.filter = 'none';
+            }
+
+            // Hide subtitle if empty
+            subtitle.style.display = designState.subtitle ? 'block' : 'none';
+        }
+
+        function applyTemplate(templateName) {
+            const template = templates[templateName];
+            if (!template) return;
+
+            // Update design state
+            Object.assign(designState, template);
+
+            // Update UI controls
+            document.getElementById('primaryColor').value = template.primaryColor;
+            document.getElementById('secondaryColor').value = template.secondaryColor;
+            document.getElementById('titleColor').value = template.titleColor;
+            document.getElementById('titleFont').value = template.titleFont;
+
+            updateCover();
+            showToast(`Template "${templateName}" applied!`, 'success');
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showLoading(true);
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const background = document.getElementById('coverBackground');
+                if (designState.backgroundType === 'image') {
+                    background.style.backgroundImage = `url(${e.target.result})`;
+                    background.style.backgroundSize = 'cover';
+                    background.style.backgroundPosition = 'center';
+                }
+                showLoading(false);
+                showToast('Image uploaded successfully!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetDesign() {
+            // Reset to default values
+            Object.assign(designState, {
+                title: 'The Great Adventure',
+                subtitle: '',
+                author: 'Jane Doe',
+                genre: 'Adventure',
+                backgroundType: 'gradient',
+                primaryColor: '#1e3c72',
+                secondaryColor: '#2a5298',
+                titleFont: 'Georgia, serif',
+                titleSize: 40,
+                titleColor: '#ffffff',
+                textAlignment: 'center',
+                titlePosition: 20,
+                authorPosition: 80,
+                overlayOpacity: 0,
+                overlayColor: '#000000',
+                titleShadow: true,
+                glowEffect: false,
+                vintageEffect: false,
+                textureEffect: false,
+                letterSpacing: 0
+            });
+
+            // Update all form controls
+            document.getElementById('bookTitle').value = designState.title;
+            document.getElementById('bookSubtitle').value = designState.subtitle;
+            document.getElementById('bookAuthor').value = designState.author;
+            document.getElementById('bookGenre').value = designState.genre;
+            document.getElementById('backgroundType').value = designState.backgroundType;
+            document.getElementById('primaryColor').value = designState.primaryColor;
+            document.getElementById('secondaryColor').value = designState.secondaryColor;
+            document.getElementById('titleFont').value = designState.titleFont;
+            document.getElementById('titleSize').value = designState.titleSize;
+            document.getElementById('titleColor').value = designState.titleColor;
+            document.getElementById('textAlignment').value = designState.textAlignment;
+            document.getElementById('titlePosition').value = designState.titlePosition;
+            document.getElementById('authorPosition').value = designState.authorPosition;
+            document.getElementById('overlayOpacity').value = designState.overlayOpacity;
+            document.getElementById('overlayColor').value = designState.overlayColor;
+            document.getElementById('letterSpacing').value = designState.letterSpacing;
+            document.getElementById('titleShadow').checked = designState.titleShadow;
+            document.getElementById('glowEffect').checked = designState.glowEffect;
+            document.getElementById('vintageEffect').checked = designState.vintageEffect;
+            document.getElementById('textureEffect').checked = designState.textureEffect;
+
+            // Update range value displays
+            document.getElementById('titleSizeValue').textContent = designState.titleSize;
+            document.getElementById('titlePositionValue').textContent = designState.titlePosition;
+            document.getElementById('authorPositionValue').textContent = designState.authorPosition;
+            document.getElementById('overlayOpacityValue').textContent = designState.overlayOpacity;
+            document.getElementById('letterSpacingValue').textContent = designState.letterSpacing;
+
+            // Reset template selection
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-template="modern"]').classList.add('active');
+
+            updateCover();
+            saveStateToHistory();
+            showToast('Design reset to default!', 'success');
+        }
+
+        function randomizeDesign() {
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#34495e', '#e67e22'];
+            const fonts = ['Georgia, serif', "'Segoe UI', sans-serif", "'Brush Script MT', cursive", "Impact, fantasy"];
+            const genres = ['Mystery', 'Romance', 'Sci-Fi', 'Fantasy', 'Thriller', 'Adventure', 'Drama', 'Comedy'];
+            
+            saveStateToHistory();
+
+            designState.primaryColor = colors[Math.floor(Math.random() * colors.length)];
+            designState.secondaryColor = colors[Math.floor(Math.random() * colors.length)];
+            designState.titleFont = fonts[Math.floor(Math.random() * fonts.length)];
+            designState.titleSize = Math.floor(Math.random() * 40) + 30;
+            designState.genre = genres[Math.floor(Math.random() * genres.length)];
+            designState.titlePosition = Math.floor(Math.random() * 30) + 15;
+            designState.authorPosition = Math.floor(Math.random() * 20) + 70;
+            designState.letterSpacing = Math.floor(Math.random() * 6) - 1;
+
+            // Update UI controls
+            document.getElementById('primaryColor').value = designState.primaryColor;
+            document.getElementById('secondaryColor').value = designState.secondaryColor;
+            document.getElementById('titleFont').value = designState.titleFont;
+            document.getElementById('titleSize').value = designState.titleSize;
+            document.getElementById('bookGenre').value = designState.genre;
+            document.getElementById('titlePosition').value = designState.titlePosition;
+            document.getElementById('authorPosition').value = designState.authorPosition;
+            document.getElementById('letterSpacing').value = designState.letterSpacing;
+
+            // Update displays
+            document.getElementById('titleSizeValue').textContent = designState.titleSize;
+            document.getElementById('titlePositionValue').textContent = designState.titlePosition;
+            document.getElementById('authorPositionValue').textContent = designState.authorPosition;
+            document.getElementById('letterSpacingValue').textContent = designState.letterSpacing;
+
+            updateCover();
+            showToast('Random design applied!', 'success');
+        }
+
+        function zoomCover(scale) {
+            const cover = document.getElementById('bookCover');
+            const baseTransform = 'rotateY(-8deg) rotateX(2deg)';
+            
+            if (scale === 1.0) {
+                cover.style.transform = baseTransform;
+            } else {
+                cover.style.transform = `${baseTransform} scale(${scale})`;
+            }
+        }
+
+        function downloadCover(format) {
+            showLoading(true);
+            const cover = document.getElementById('bookCover');
+            
+            // Use html2canvas to capture the cover
+            html2canvas(cover, {
+                scale: 3, // High resolution
+                backgroundColor: null,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                let dataUrl;
+                if (format === 'png') {
+                    dataUrl = canvas.toDataURL('image/png');
+                } else if (format === 'jpg') {
+                    dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                } else {
+                    // SVG is not directly supported, so we'll use PNG as fallback
+                    dataUrl = canvas.toDataURL('image/png');
+                }
+                
+                const link = document.createElement('a');
+                link.download = `book-cover-${Date.now()}.${format}`;
+                link.href = dataUrl;
+                link.click();
+                
+                showLoading(false);
+                showToast(`Cover downloaded as ${format.toUpperCase()}!`, 'success');
+            }).catch(error => {
+                showLoading(false);
+                showToast('Error generating cover: ' + error.message, 'error');
+                console.error('Error generating cover:', error);
+            });
+        }
+
+        function saveDraft() {
+            const draftData = {
+                designState: designState,
+                timestamp: Date.now()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('bookCoverDraft', JSON.stringify(draftData));
+            
+            // Visual feedback
+            showToast('Draft saved successfully!', 'success');
+        }
+
+        function loadSavedDraft() {
+            const savedData = localStorage.getItem('bookCoverDraft');
+            
+            if (savedData) {
+                try {
+                    const draft = JSON.parse(savedData);
+                    Object.assign(designState, draft.designState);
+                    updateAllControls();
+                    updateCover();
+                    showToast('Draft loaded successfully!', 'success');
+                } catch (e) {
+                    showToast('Error loading draft: Invalid format', 'error');
+                }
+            }
+        }
+
+        function updateAllControls() {
+            // Update all form controls to match current design state
+            document.getElementById('bookTitle').value = designState.title;
+            document.getElementById('bookSubtitle').value = designState.subtitle;
+            document.getElementById('bookAuthor').value = designState.author;
+            document.getElementById('bookGenre').value = designState.genre;
+            document.getElementById('backgroundType').value = designState.backgroundType;
+            document.getElementById('primaryColor').value = designState.primaryColor;
+            document.getElementById('secondaryColor').value = designState.secondaryColor;
+            document.getElementById('titleFont').value = designState.titleFont;
+            document.getElementById('titleSize').value = designState.titleSize;
+            document.getElementById('titleColor').value = designState.titleColor;
+            document.getElementById('textAlignment').value = designState.textAlignment;
+            document.getElementById('titlePosition').value = designState.titlePosition;
+            document.getElementById('authorPosition').value = designState.authorPosition;
+            document.getElementById('overlayOpacity').value = designState.overlayOpacity;
+            document.getElementById('overlayColor').value = designState.overlayColor;
+            document.getElementById('letterSpacing').value = designState.letterSpacing;
+            document.getElementById('titleShadow').checked = designState.titleShadow;
+            document.getElementById('glowEffect').checked = designState.glowEffect;
+            document.getElementById('vintageEffect').checked = designState.vintageEffect;
+            document.getElementById('textureEffect').checked = designState.textureEffect;
+
+            // Update range value displays
+            document.getElementById('titleSizeValue').textContent = designState.titleSize;
+            document.getElementById('titlePositionValue').textContent = designState.titlePosition;
+            document.getElementById('authorPositionValue').textContent = designState.authorPosition;
+            document.getElementById('overlayOpacityValue').textContent = designState.overlayOpacity;
+            document.getElementById('letterSpacingValue').textContent = designState.letterSpacing;
+
+            // Update template selection
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+        }
+
+        function showTutorial() {
+            alert(`📚 Book Cover Designer Pro Tutorial
+
+1. 📖 Enter your book details (title, author, genre)
+2. 🎨 Choose background style and colors
+3. ✏️ Customize typography and layout
+4. ✨ Add effects and overlays
+5. 📚 Try different templates for inspiration
+6. 🔍 Use zoom controls to preview
+7. 📥 Download your cover in PNG, JPG or SVG format
+
+Pro Tips:
+• Use contrasting colors for better readability
+• Keep titles concise and impactful
+• Consider your genre when choosing styles
+• Save drafts regularly while working
+• Use Undo/Redo to experiment safely
+
+Happy designing! 🎨`);
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast';
+            
+            if (type === 'success') {
+                toast.classList.add('toast-success');
+            } else if (type === 'error') {
+                toast.classList.add('toast-error');
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveDraft();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        randomizeDesign();
+                        break;
+                    case 'z':
+                        if (e.shiftKey) {
+                            redo();
+                        } else {
+                            undo();
+                        }
+                        e.preventDefault();
+                        break;
+                }
+            }
+        });
+
+        // Add smooth scrolling for mobile
+        document.addEventListener('touchstart', function(){}, {passive: true});
+
+        // Initialize history buttons
+        updateHistoryButtons();
+    </script>
+</body>
+</html>
